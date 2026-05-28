@@ -1,0 +1,8 @@
+/* empty css                           */
+/* empty css                                 */
+/* empty css                        */
+import { createRuntimeFn as a } from "@vanilla-extract/recipes/createRuntimeFn";
+var j = a({ defaultClassName: "v250_p3ayzj1 v250_p3ayzj0", variantClassNames: { size: { 0: "v250_p3ayzj2", 100: "v250_p3ayzj3", 150: "v250_p3ayzj4", 200: "v250_p3ayzj5", 225: "v250_p3ayzj6", 250: "v250_p3ayzj7", 300: "v250_p3ayzj8", 400: "v250_p3ayzj9", 500: "v250_p3ayzja", 600: "v250_p3ayzjb", 700: "v250_p3ayzjc", 800: "v250_p3ayzjd", 900: "v250_p3ayzje", 1e3: "v250_p3ayzjf", 1200: "v250_p3ayzjg", none: "v250_p3ayzjh", "2xs": "v250_p3ayzji", xs: "v250_p3ayzjj", sm: "v250_p3ayzjk", md: "v250_p3ayzjl", lg: "v250_p3ayzjm", xl: "v250_p3ayzjn", "2xl": "v250_p3ayzjo", "3xl": "v250_p3ayzjp", "4xl": "v250_p3ayzjq", "5xl": "v250_p3ayzjr", "6xl": "v250_p3ayzjs", "025": "v250_p3ayzjt", "050": "v250_p3ayzju", "075": "v250_p3ayzjv" }, color: { inherit: "v250_p3ayzjw", primary: "v250_p3ayzjx", inverse: "v250_p3ayzjy" } }, defaultVariants: { size: "lg", color: "primary" }, compoundVariants: [] });
+export {
+  j as logo
+};

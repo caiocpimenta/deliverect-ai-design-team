@@ -1,0 +1,64 @@
+import { jsx as C, jsxs as t } from "react/jsx-runtime";
+import "../../primitives/avatar/avatar-fallback.js";
+import "../../primitives/avatar/avatar-image.js";
+import "../../primitives/avatar/avatar-root.js";
+import "../../primitives/button/button.js";
+import "../../primitives/card/card.js";
+import "../../primitives/checkbox/checkbox.js";
+import { Icon as l } from "../../primitives/icon/icon.js";
+import "../../primitives/illustration/illustration.js";
+import "../../primitives/input/input-description.js";
+import "../../primitives/input/input-error.js";
+import "../../primitives/input/input-field.js";
+import "../../primitives/input/input-group.js";
+import "../../primitives/input/input-label.js";
+import "../../primitives/input/input-left-addon.js";
+import "../../primitives/input/input-right-addon.js";
+import "../../primitives/input/input-root.js";
+import "../../primitives/link/link.js";
+import "../../primitives/loading-spinner/loading-spinner.js";
+import "../../primitives/logo/logo.js";
+import "../../primitives/progress-tracker/progress-tracker.js";
+import "../../primitives/title-input/title-input.js";
+import "../../primitives/toggle/toggle.js";
+const S = ({ size: o, color: r, ...i }) => /* @__PURE__ */ C(l, { size: o, color: r, children: /* @__PURE__ */ t(
+  "svg",
+  {
+    viewBox: "0 0 32 32",
+    fill: "none",
+    xmlns: "http://www.w3.org/2000/svg",
+    ...i,
+    children: [
+      /* @__PURE__ */ C(
+        "path",
+        {
+          d: "M22.0002 4C22.5029 4.00011 22.9422 4.32793 23.0695 4.79791C23.4302 6.12941 23.8158 6.90633 24.3685 7.4715C24.9252 8.04087 25.7579 8.50389 27.2464 8.98703C27.6967 9.13319 28.0001 9.54104 28 10.0002C27.9999 10.4593 27.6964 10.8671 27.246 11.0131C25.7579 11.4956 24.9253 11.9588 24.3686 12.5284C23.8158 13.0939 23.4302 13.8712 23.0695 15.2022C22.9421 15.6722 22.5027 16 22 16C21.4973 16 21.0579 15.6722 20.9305 15.2022C20.5698 13.8714 20.184 13.0943 19.6311 12.5289C19.0741 11.9593 18.2413 11.496 16.7535 11.0129C16.3032 10.8667 15.9999 10.4589 16 9.99983C16.0001 9.54075 16.3035 9.13301 16.7538 8.98696C18.2413 8.50449 19.0738 8.04127 19.6306 7.47164C20.1835 6.90601 20.5693 6.12855 20.9306 4.79744C21.0581 4.32752 21.4976 3.99989 22.0002 4Z",
+          fill: "currentColor",
+          fillRule: "evenodd",
+          clipRule: "evenodd"
+        }
+      ),
+      /* @__PURE__ */ C(
+        "path",
+        {
+          d: "M12.5 9C12.9358 9 13.315 9.29997 13.4178 9.72598C13.9903 12.099 14.6334 13.6222 15.6265 14.7631C16.6168 15.9008 18.0407 16.7559 20.3772 17.6073C20.7511 17.7435 21 18.1007 21 18.5006C21 18.9005 20.7509 19.2576 20.3771 19.3938C18.0407 20.2446 16.6168 21.0998 15.6265 22.2374C14.6334 23.3783 13.9902 24.9016 13.4178 27.2741C13.315 27.7001 12.9358 28 12.5 28C12.0642 28 11.685 27.7001 11.5822 27.2741C11.0098 24.9021 10.3666 23.3791 9.37345 22.2382C8.38314 21.1005 6.95917 20.2451 4.62276 19.3937C4.24894 19.2575 3.99996 18.9004 4 18.5004C4.00004 18.1005 4.24908 17.7434 4.62293 17.6073C6.9593 16.7564 8.38318 15.9013 9.37342 14.7635C10.3665 13.6225 11.0097 12.099 11.5822 9.72598C11.685 9.29997 12.0642 9 12.5 9Z",
+          fill: "currentColor",
+          fillRule: "evenodd",
+          clipRule: "evenodd"
+        }
+      ),
+      /* @__PURE__ */ C(
+        "path",
+        {
+          d: "M24.9041 20.6832C24.7948 20.2804 24.4242 20.0001 24.0007 20C23.5772 19.9999 23.2064 20.28 23.0969 20.6827C22.876 21.4955 22.6494 21.9318 22.3471 22.24C22.0395 22.5537 21.562 22.8281 20.6434 23.1252C20.2595 23.2494 20 23.6022 20 24C20 24.3978 20.2595 24.7506 20.6434 24.8748C21.562 25.1719 22.0395 25.4463 22.3471 25.76C22.6494 26.0682 22.876 26.5045 23.0969 27.3173C23.2064 27.72 23.5772 28.0001 24.0007 28C24.4242 27.9999 24.7948 27.7196 24.9041 27.3168C25.1246 26.5041 25.351 26.068 25.6531 25.7599C25.9605 25.4463 26.438 25.1719 27.3566 24.8748C27.7405 24.7506 28 24.3978 28 24C28 23.6022 27.7405 23.2494 27.3566 23.1252C26.438 22.8281 25.9605 22.5537 25.6531 22.2401C25.351 21.932 25.1246 21.4959 24.9041 20.6832Z",
+          fill: "currentColor",
+          fillRule: "evenodd",
+          clipRule: "evenodd"
+        }
+      )
+    ]
+  }
+) });
+export {
+  S as SparklesFill
+};

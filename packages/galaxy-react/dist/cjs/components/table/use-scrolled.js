@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const t=require("react"),u=l=>{const[s,o]=t.useState(!1),[c,n]=t.useState(!1);return t.useEffect(()=>{const e=l.current;if(!e)return()=>{};const r=()=>{o(e.scrollLeft>0),n(e.scrollTop>0)};return e.addEventListener("scroll",r),()=>{e.removeEventListener("scroll",r)}},[l]),[s,c]};exports.useScrolled=u;

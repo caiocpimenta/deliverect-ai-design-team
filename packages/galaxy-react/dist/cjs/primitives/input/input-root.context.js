@@ -1,0 +1,1 @@
+"use client";"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const t=require("react"),e=t.createContext({describedBy:void 0,inputId:void 0,labelId:void 0,hasError:!1,required:!1}),o=e.Provider,n=()=>t.useContext(e);exports.InputRootContextProvider=o;exports.useInputRootContext=n;

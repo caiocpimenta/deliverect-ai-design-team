@@ -1,0 +1,1 @@
+"use client";"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const c=require("react/jsx-runtime"),s=require("./banner.context.js"),a=require("./banner-icon.util.js"),n=e=>{const{status:t}=s.useBannerContext(),{color:o,Icon:r}=a.getBannerIconConfig(t);return c.jsx(r,{size:"lg",color:o,...e})};n.displayName="Banner.Icon";exports.BannerIcon=n;

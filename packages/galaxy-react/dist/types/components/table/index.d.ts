@@ -1,0 +1,10 @@
+import { TableBodyProps } from './table-body';
+import { TableCellProps } from './table-cell';
+import { TableColumnHeaderCellProps } from './table-column-header-cell';
+import { TableHeaderProps } from './table-header';
+import { TableRootProps } from './table-root';
+import { TableRowProps } from './table-row';
+import { TableRowHeaderCellProps } from './table-row-header-cel';
+import * as Table from "./table";
+export type { TableBodyProps, TableCellProps, TableColumnHeaderCellProps, TableHeaderProps, TableRootProps, TableRowHeaderCellProps, TableRowProps, };
+export { Table };

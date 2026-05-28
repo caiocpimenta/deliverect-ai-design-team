@@ -1,0 +1,17 @@
+import { StyleRule } from "@vanilla-extract/css";
+export declare const resetLayer: string;
+export declare const designSystemLayer: string;
+export declare const utilitiesLayer: string;
+export declare const typographyLayer: string;
+export declare const layoutLayer: string;
+export declare const primitivesLayer: string;
+export declare const componentsLayer: string;
+export declare const sprinklesLayer: string;
+export declare const createLayerHelper: (layer: string) => (rule: StyleRule) => StyleRule;
+export declare const reset: (rule: StyleRule) => StyleRule;
+export declare const dsUtilities: (rule: StyleRule) => StyleRule;
+export declare const dsTypography: (rule: StyleRule) => StyleRule;
+export declare const dsLayout: (rule: StyleRule) => StyleRule;
+export declare const dsPrimitives: (rule: StyleRule) => StyleRule;
+export declare const dsComponents: (rule: StyleRule) => StyleRule;
+export declare const dsSprinkles: (rule: StyleRule) => StyleRule;

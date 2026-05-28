@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const l={"data-scrollable-vertically":void 0,"data-max-scrolled-vertically":void 0,"data-scrolled-vertically":void 0};exports.DEFAULT_SCROLL_DATA_ATTRIBUTES=l;

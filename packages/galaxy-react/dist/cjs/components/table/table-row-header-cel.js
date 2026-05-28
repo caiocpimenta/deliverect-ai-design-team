@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const a=require("react/jsx-runtime"),o=require("react"),t=require("./table-cell.js"),e=o.forwardRef((l,r)=>a.jsx(t.TableCell,{scope:"row",as:"th",...l,ref:r}));e.displayName="Table.RowHeaderCell";exports.TableRowHeaderCell=e;

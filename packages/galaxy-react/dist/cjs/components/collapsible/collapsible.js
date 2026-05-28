@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const e=require("./collapsible-content.js"),o=require("./collapsible-root.js"),l=require("./collapsible-trigger.js");exports.Content=e.CollapsibleContent;exports.Root=o.CollapsibleRoot;exports.Trigger=l.CollapsibleTrigger;

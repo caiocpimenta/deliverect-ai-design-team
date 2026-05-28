@@ -1,0 +1,10 @@
+import { ModalBody } from './modal-body';
+import { ModalButtonTrigger } from './modal-button-trigger';
+import { ModalContent } from './modal-content';
+import { ModalDescription } from './modal-description';
+import { ModalFooter } from './modal-footer';
+import { ModalHeader } from './modal-header';
+import { ModalRoot } from './modal-root';
+import { ModalTitle } from './modal-title';
+import { ModalTrigger } from './modal-trigger';
+export { ModalBody as Body, ModalButtonTrigger as ButtonTrigger, ModalContent as Content, ModalDescription as Description, ModalFooter as Footer, ModalHeader as Header, ModalRoot as Root, ModalTitle as Title, ModalTrigger as Trigger, };

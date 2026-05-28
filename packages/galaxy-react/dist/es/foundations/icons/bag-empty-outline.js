@@ -1,0 +1,76 @@
+import { jsx as C, jsxs as i } from "react/jsx-runtime";
+import "../../primitives/avatar/avatar-fallback.js";
+import "../../primitives/avatar/avatar-image.js";
+import "../../primitives/avatar/avatar-root.js";
+import "../../primitives/button/button.js";
+import "../../primitives/card/card.js";
+import "../../primitives/checkbox/checkbox.js";
+import { Icon as p } from "../../primitives/icon/icon.js";
+import "../../primitives/illustration/illustration.js";
+import "../../primitives/input/input-description.js";
+import "../../primitives/input/input-error.js";
+import "../../primitives/input/input-field.js";
+import "../../primitives/input/input-group.js";
+import "../../primitives/input/input-label.js";
+import "../../primitives/input/input-left-addon.js";
+import "../../primitives/input/input-right-addon.js";
+import "../../primitives/input/input-root.js";
+import "../../primitives/link/link.js";
+import "../../primitives/loading-spinner/loading-spinner.js";
+import "../../primitives/logo/logo.js";
+import "../../primitives/progress-tracker/progress-tracker.js";
+import "../../primitives/title-input/title-input.js";
+import "../../primitives/toggle/toggle.js";
+const E = ({ size: r, color: o, ...t }) => /* @__PURE__ */ C(p, { size: r, color: o, children: /* @__PURE__ */ i(
+  "svg",
+  {
+    viewBox: "0 0 32 32",
+    fill: "none",
+    xmlns: "http://www.w3.org/2000/svg",
+    ...t,
+    children: [
+      /* @__PURE__ */ C(
+        "path",
+        {
+          d: "M26.9099 27.05C26.9799 26.86 27.0099 26.65 26.9999 26.44L24.8999 11.26C24.8399 10.9 24.6499 10.57 24.3799 10.34C24.0999 10.11 23.7599 9.99001 23.3999 10H8.59994C8.23994 9.98001 7.89994 10.1 7.61994 10.34C7.33994 10.57 7.15994 10.9 7.09994 11.27L4.99994 26.44C4.98994 26.63 5.01994 26.83 5.07994 27.01C5.13994 27.19 5.23994 27.36 5.35994 27.51C5.47994 27.65 5.63994 27.77 5.79994 27.86C5.96994 27.94 6.14994 27.99 6.33994 28C6.38994 28 6.44994 28 6.49994 28H25.4799C25.6799 28.01 25.8799 27.98 26.0699 27.91C26.2599 27.84 26.4299 27.72 26.5699 27.58C26.7099 27.44 26.8199 27.26 26.8899 27.06L26.9099 27.05ZM22.9899 12L24.9199 26H7.07994L9.00994 12H22.9899Z",
+          fill: "currentColor",
+          fillRule: "evenodd",
+          clipRule: "evenodd"
+        }
+      ),
+      /* @__PURE__ */ C(
+        "path",
+        {
+          d: "M11.9299 15.19C12.0599 14.91 12.3399 14.66 12.6399 14.55C12.7399 14.51 12.8299 14.5 13.0399 14.51C13.2799 14.51 13.3299 14.53 13.4799 14.6C13.7199 14.72 13.9399 14.94 14.0599 15.18C14.1499 15.36 14.1599 15.4 14.1599 15.64C14.1599 15.85 14.1599 15.94 14.1199 16.06C13.8499 16.92 12.7899 17.18 12.1699 16.54C11.8299 16.19 11.7299 15.63 11.9299 15.19Z",
+          fill: "currentColor"
+        }
+      ),
+      /* @__PURE__ */ C(
+        "path",
+        {
+          d: "M17.8699 15.37C17.9799 14.98 18.2699 14.67 18.6499 14.55C18.8599 14.48 19.1799 14.48 19.3799 14.55C20.2199 14.84 20.4599 15.9 19.8399 16.54C19.2599 17.13 18.3199 16.96 17.9499 16.21C17.8699 16.04 17.8599 15.99 17.8399 15.77C17.8399 15.59 17.8399 15.49 17.8699 15.37Z",
+          fill: "currentColor"
+        }
+      ),
+      /* @__PURE__ */ C(
+        "path",
+        {
+          d: "M11.2799 22.01C12.2999 20.6 13.8499 19.73 15.5499 19.59C16.3199 19.53 17.1699 19.64 17.9299 19.91C18.8199 20.22 19.7399 20.84 20.3299 21.52C20.6099 21.84 20.8699 22.2 20.9399 22.37C20.9999 22.5 20.9999 22.54 20.9899 22.72C20.9699 23.04 20.8199 23.28 20.5299 23.43C20.3599 23.52 20.0599 23.52 19.8699 23.43C19.7099 23.35 19.5999 23.25 19.4599 23.04C19.2099 22.66 18.7799 22.24 18.3499 21.94C18.1099 21.77 17.6099 21.52 17.3299 21.43C16.0199 20.99 14.5499 21.23 13.4299 22.09C13.1699 22.29 12.7899 22.68 12.5699 22.98C12.3499 23.28 12.2799 23.35 12.1099 23.43C12.0099 23.48 11.9399 23.49 11.7799 23.49C11.5299 23.49 11.3699 23.42 11.1999 23.22C11.0499 23.05 10.9899 22.88 11.0099 22.64C11.0199 22.42 11.0699 22.31 11.2899 22.01H11.2799Z",
+          fill: "currentColor"
+        }
+      ),
+      /* @__PURE__ */ C(
+        "path",
+        {
+          d: "M16 6C14.3431 6 13 7.34315 13 9H11C11 6.23858 13.2386 4 16 4C18.7614 4 21 6.23858 21 9H19C19 7.34315 17.6569 6 16 6Z",
+          fill: "currentColor",
+          fillRule: "evenodd",
+          clipRule: "evenodd"
+        }
+      )
+    ]
+  }
+) });
+export {
+  E as BagEmptyOutline
+};

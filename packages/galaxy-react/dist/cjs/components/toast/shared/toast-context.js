@@ -1,0 +1,1 @@
+"use client";"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const e=require("react"),o=e.createContext(void 0),n=()=>{const t=e.useContext(o);if(t===void 0)throw new Error("Please use this component inside a (...)Toast.Root component.");return t};exports.ToastContext=o;exports.useToastContext=n;

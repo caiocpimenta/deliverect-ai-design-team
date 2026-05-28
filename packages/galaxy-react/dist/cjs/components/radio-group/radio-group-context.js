@@ -1,0 +1,1 @@
+"use client";"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const e=require("react"),t=e.createContext({size:"sm"}),r=t.Provider,n=()=>{const o=e.useContext(t);if(!o)throw new Error("Please use this component inside a RadioGroup.Root component");return o};exports.RadioGroupContextProvider=r;exports.useRadioGroupContext=n;

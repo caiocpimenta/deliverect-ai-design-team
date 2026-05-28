@@ -1,0 +1,44 @@
+import { jsx as o } from "react/jsx-runtime";
+import "../../primitives/avatar/avatar-fallback.js";
+import "../../primitives/avatar/avatar-image.js";
+import "../../primitives/avatar/avatar-root.js";
+import "../../primitives/button/button.js";
+import "../../primitives/card/card.js";
+import "../../primitives/checkbox/checkbox.js";
+import { Icon as p } from "../../primitives/icon/icon.js";
+import "../../primitives/illustration/illustration.js";
+import "../../primitives/input/input-description.js";
+import "../../primitives/input/input-error.js";
+import "../../primitives/input/input-field.js";
+import "../../primitives/input/input-group.js";
+import "../../primitives/input/input-label.js";
+import "../../primitives/input/input-left-addon.js";
+import "../../primitives/input/input-right-addon.js";
+import "../../primitives/input/input-root.js";
+import "../../primitives/link/link.js";
+import "../../primitives/loading-spinner/loading-spinner.js";
+import "../../primitives/logo/logo.js";
+import "../../primitives/progress-tracker/progress-tracker.js";
+import "../../primitives/title-input/title-input.js";
+import "../../primitives/toggle/toggle.js";
+const I = ({ size: r, color: i, ...t }) => /* @__PURE__ */ o(p, { size: r, color: i, children: /* @__PURE__ */ o(
+  "svg",
+  {
+    viewBox: "0 0 32 32",
+    fill: "none",
+    xmlns: "http://www.w3.org/2000/svg",
+    ...t,
+    children: /* @__PURE__ */ o(
+      "path",
+      {
+        d: "M26.8501 5.14958C26.4808 4.78184 26.0423 4.49093 25.5599 4.29363C25.0775 4.09633 24.5608 3.99656 24.0397 4.00009C23.5186 4.00362 23.0033 4.11037 22.5236 4.31418C22.044 4.51799 21.6094 4.81482 21.2451 5.18753L5.52529 20.9077L4.03281 26.7302C3.84095 27.4787 4.52142 28.1591 5.2699 27.9672L11.0923 26.4738L26.8121 10.7536C27.1849 10.3894 27.4818 9.95502 27.6857 9.47543C27.8896 8.99585 27.9964 8.4806 27.9999 7.95949C28.0034 7.43838 27.9036 6.92173 27.7063 6.43943C27.5089 5.95712 27.2179 5.51873 26.8501 5.14958ZM22.6989 6.60845L22.6826 6.62494L22.3609 6.94664L25.0525 9.63833L25.3747 9.31616L25.3917 9.29935C25.5723 9.12294 25.7162 8.91249 25.8149 8.68015C25.9137 8.4478 25.9654 8.19819 25.9672 7.94573C25.9689 7.69326 25.9205 7.44297 25.8249 7.20931C25.7298 6.97688 25.5898 6.7655 25.4129 6.58725C25.2345 6.41032 25.0229 6.27028 24.7903 6.17515C24.5565 6.07951 24.3061 6.03115 24.0535 6.03286C23.8008 6.03457 23.5511 6.08632 23.3186 6.18511C23.0861 6.2839 22.8754 6.42779 22.6989 6.60845ZM9.36101 19.9468L20.9467 8.36087L23.6384 11.0526L12.0527 22.6385L9.36101 19.9468ZM7.94681 21.361L7.35624 21.9516L6.42838 25.5714L10.0483 24.6429L10.6385 24.0527L7.94681 21.361Z",
+        fill: "currentColor",
+        fillRule: "evenodd",
+        clipRule: "evenodd"
+      }
+    )
+  }
+) });
+export {
+  I as EditOutline
+};

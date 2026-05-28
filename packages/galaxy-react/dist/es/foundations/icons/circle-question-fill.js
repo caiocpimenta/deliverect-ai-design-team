@@ -1,0 +1,44 @@
+import { jsx as C } from "react/jsx-runtime";
+import "../../primitives/avatar/avatar-fallback.js";
+import "../../primitives/avatar/avatar-image.js";
+import "../../primitives/avatar/avatar-root.js";
+import "../../primitives/button/button.js";
+import "../../primitives/card/card.js";
+import "../../primitives/checkbox/checkbox.js";
+import { Icon as t } from "../../primitives/icon/icon.js";
+import "../../primitives/illustration/illustration.js";
+import "../../primitives/input/input-description.js";
+import "../../primitives/input/input-error.js";
+import "../../primitives/input/input-field.js";
+import "../../primitives/input/input-group.js";
+import "../../primitives/input/input-label.js";
+import "../../primitives/input/input-left-addon.js";
+import "../../primitives/input/input-right-addon.js";
+import "../../primitives/input/input-root.js";
+import "../../primitives/link/link.js";
+import "../../primitives/loading-spinner/loading-spinner.js";
+import "../../primitives/logo/logo.js";
+import "../../primitives/progress-tracker/progress-tracker.js";
+import "../../primitives/title-input/title-input.js";
+import "../../primitives/toggle/toggle.js";
+const I = ({ size: o, color: r, ...i }) => /* @__PURE__ */ C(t, { size: o, color: r, children: /* @__PURE__ */ C(
+  "svg",
+  {
+    viewBox: "0 0 32 32",
+    fill: "none",
+    xmlns: "http://www.w3.org/2000/svg",
+    ...i,
+    children: /* @__PURE__ */ C(
+      "path",
+      {
+        d: "M30 16C30 23.7317 23.7317 30 16 30C8.26827 30 2 23.7317 2 16C2 8.26827 8.26827 2 16 2C23.7317 2 30 8.26827 30 16ZM14.8511 10.2803C15.2581 10.0697 15.7152 9.97502 16.1724 10.0066C16.6297 10.0382 17.0694 10.1949 17.4436 10.4596C17.8178 10.7242 18.112 11.0866 18.2941 11.5072C18.4762 11.9278 18.5393 12.3903 18.4763 12.8443C18.4133 13.2982 18.2267 13.7261 17.937 14.0812C17.6472 14.4363 17.2654 14.7049 16.8333 14.8577C16.2969 15.0473 15.8326 15.3987 15.5042 15.8633C15.176 16.3278 14.9998 16.8831 15 17.4519V18.625C15 19.1773 15.4477 19.625 16 19.625C16.5523 19.625 17 19.1773 17 18.625V17.4508C16.9999 17.2957 17.048 17.1443 17.1375 17.0176C17.2271 16.8909 17.3537 16.795 17.5 16.7433C18.2778 16.4683 18.965 15.9848 19.4866 15.3457C20.0081 14.7065 20.3439 13.9363 20.4573 13.1191C20.5707 12.302 20.4572 11.4694 20.1294 10.7124C19.8016 9.95538 19.272 9.30304 18.5984 8.82669C17.9249 8.35033 17.1334 8.06829 16.3104 8.01139C15.4874 7.95449 14.6646 8.12492 13.9319 8.50404C13.1992 8.88317 12.5849 9.45641 12.156 10.1611C11.7271 10.8658 11.5002 11.6749 11.5 12.4998C11.4999 13.0521 11.9475 13.4999 12.4998 13.5C13.0521 13.5001 13.4999 13.0525 13.5 12.5002C13.5001 12.0419 13.6262 11.5924 13.8644 11.2009C14.1027 10.8094 14.444 10.491 14.8511 10.2803ZM16.0625 21.125C15.6647 21.125 15.2831 21.283 15.0018 21.5643C14.7205 21.8456 14.5625 22.2272 14.5625 22.625C14.5625 23.0228 14.7205 23.4044 15.0018 23.6857C15.2831 23.967 15.6647 24.125 16.0625 24.125C16.4603 24.125 16.8419 23.967 17.1232 23.6857C17.4045 23.4044 17.5625 23.0228 17.5625 22.625C17.5625 22.2272 17.4045 21.8456 17.1232 21.5643C16.8419 21.283 16.4603 21.125 16.0625 21.125Z",
+        fill: "currentColor",
+        fillRule: "evenodd",
+        clipRule: "evenodd"
+      }
+    )
+  }
+) });
+export {
+  I as CircleQuestionFill
+};

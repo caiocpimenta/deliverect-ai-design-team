@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const e={production:{label:"",badgeStatus:void 0},staging:{label:"Staging",badgeStatus:"warning"},testing:{label:"Testing",badgeStatus:"info"},development:{label:"Dev",badgeStatus:"info"},local:{label:"Local",badgeStatus:"success"}};exports.ENVIRONMENT_CONFIGS=e;

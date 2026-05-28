@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const r=require("react/jsx-runtime"),n=require("react"),a=require("../../foundations/typography/text/text.js"),t=n.forwardRef((e,o)=>r.jsx(a.Text,{color:"secondary",...e,ref:o}));t.displayName="EmptyState.Content";exports.EmptyStateContent=t;

@@ -1,0 +1,8 @@
+/* empty css                           */
+/* empty css                                 */
+/* empty css                             */
+import { createRuntimeFn as e } from "@vanilla-extract/recipes/createRuntimeFn";
+var s = e({ defaultClassName: "v250_nezied2 v250_nezied1", variantClassNames: { status: { default: "v250_nezied3", primary: "v250_nezied0", active: "v250_nezied0", success: "v250_nezied0", critical: "v250_nezied7" }, sticky: { true: "v250_nezied8" } }, defaultVariants: { status: "default" }, compoundVariants: [] });
+export {
+  s as tableRow
+};

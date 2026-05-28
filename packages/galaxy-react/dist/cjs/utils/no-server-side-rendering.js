@@ -1,0 +1,1 @@
+"use client";"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const e=require("react/jsx-runtime"),r=require("react"),u=({children:n})=>{const[t,s]=r.useState(!1);return r.useEffect(()=>{s(!0)},[]),t?e.jsx(e.Fragment,{children:n}):null};exports.NoServerSideRendering=u;

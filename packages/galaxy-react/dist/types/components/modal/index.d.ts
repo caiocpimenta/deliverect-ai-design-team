@@ -1,0 +1,12 @@
+import { ModalBodyProps } from './modal-body';
+import { ModalButtonTriggerProps } from './modal-button-trigger';
+import { ModalContentProps } from './modal-content';
+import { ModalDescriptionProps } from './modal-description';
+import { ModalFooterProps } from './modal-footer';
+import { ModalHeaderProps } from './modal-header';
+import { ModalRootProps } from './modal-root';
+import { ModalTitleProps } from './modal-title';
+import { ModalTriggerProps } from './modal-trigger';
+import * as Modal from "./modal";
+export type { ModalBodyProps, ModalButtonTriggerProps, ModalContentProps, ModalDescriptionProps, ModalFooterProps, ModalHeaderProps, ModalRootProps, ModalTitleProps, ModalTriggerProps, };
+export { Modal };

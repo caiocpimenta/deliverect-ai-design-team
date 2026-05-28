@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const n=require("react/jsx-runtime"),i=require("react"),s=require("../../foundations/typography/text/text.js"),e=i.forwardRef((t,r)=>n.jsx(s.Text,{size:"md",weight:"bold",as:"h4",...t,ref:r}));e.displayName="Banner.Title";exports.BannerTitle=e;

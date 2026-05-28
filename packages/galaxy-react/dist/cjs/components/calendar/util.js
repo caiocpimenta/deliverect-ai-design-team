@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const n=t=>{let r=new Date;return t&&(t instanceof Date?r=t:Array.isArray(t)?r=t[t.length-1]:t.from&&(r=t.from)),new Date(r.getFullYear(),r.getMonth())};exports.getDefaultMonth=n;

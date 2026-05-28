@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const a=require("react/jsx-runtime"),c=require("react"),r=require("../../foundations/layout/stack/stack.js"),t=c.forwardRef(({...e},s)=>a.jsx(r.Stack,{space:"xs",alignX:"center",height:"auto",...e,ref:s}));t.displayName="EmptyState.Actions";exports.EmptyStateActions=t;

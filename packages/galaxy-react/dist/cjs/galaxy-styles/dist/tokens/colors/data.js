@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const i=require("./foundation.js"),r={neutral:c(i.neutral),success:c(i.success),critical:c(i.critical),warning:c(i.warning),info:c(i.info),magic:c(i.magic),decorative:c(i.decorative)};function c(n){return{10:n[50],100:n[200],200:n[400],300:n[600],400:n[700],500:n[900]}}exports.data=r;

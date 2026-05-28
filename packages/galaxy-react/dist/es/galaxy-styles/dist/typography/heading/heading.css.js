@@ -1,0 +1,9 @@
+/* empty css                              */
+/* empty css                                    */
+/* empty css                               */
+/* empty css                           */
+import { createRuntimeFn as v } from "@vanilla-extract/recipes/createRuntimeFn";
+var t = v({ defaultClassName: "v250_1mrvpe30", variantClassNames: { level: { 1: "v250_1mrvpe31", 2: "v250_1mrvpe32", 3: "v250_1mrvpe33", 4: "v250_1mrvpe34", 5: "v250_1mrvpe35", 6: "v250_1mrvpe36" }, overflow: { false: "v250_1mrvpe37" }, color: { default: "v250_1njv0an0", secondary: "v250_1njv0an1", inverse: "v250_1njv0an2", placeholder: "v250_1njv0an3", inactive: "v250_1njv0an4", neutral: "v250_1njv0an5", brand: "v250_1njv0an6", success: "v250_1njv0an7", critical: "v250_1njv0an8", warning: "v250_1njv0an9", info: "v250_1njv0ana", magic: "v250_1njv0anb", decorative: "v250_1njv0anc", inherit: "v250_1njv0and", primary: "v250_1njv0ane", text: "v250_1njv0anf" } }, defaultVariants: { overflow: !0, color: "default" }, compoundVariants: [] });
+export {
+  t as heading
+};

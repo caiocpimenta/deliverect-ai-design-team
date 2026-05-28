@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const a=require("./avatar-fallback.js"),t=require("./avatar-image.js"),e=require("./avatar-root.js");exports.Fallback=a.AvatarFallback;exports.Image=t.AvatarImage;exports.Root=e.AvatarRoot;

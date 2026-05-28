@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const n=require("../galaxy-styles/dist/tokens/sprinkles.css.js"),o=s=>{const r={},t={};for(const e in s)n.sprinkles.properties.has(e)?r[e]=s[e]:t[e]=s[e];return{sprinkleProps:r,nativeProps:t}};exports.separateSprinklesFromProps=o;

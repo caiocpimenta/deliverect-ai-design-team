@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const n=require("./foundation.js"),a={default:n.neutral[0],nav:n.neutral[50],page:n.neutral[0],background:n.neutral[0],navigation1:n.neutral[50],navigation2:n.neutral[100],backdrop:n.transparent.neutral[300],inverse:n.neutral[1e3]};exports.background=a;

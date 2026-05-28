@@ -1,0 +1,8 @@
+/* empty css                              */
+/* empty css                                    */
+/* empty css                         */
+import { createRuntimeFn as t } from "@vanilla-extract/recipes/createRuntimeFn";
+var v = t({ defaultClassName: "v250_12mxtalv", variantClassNames: { height: { full: "v250_12mxtalw", auto: "v250_12mxtalx" }, space: { 0: "v250_12mxtal0", 100: "v250_12mxtal1", 150: "v250_12mxtal2", 200: "v250_12mxtal3", 225: "v250_12mxtal4", 250: "v250_12mxtal5", 300: "v250_12mxtal6", 400: "v250_12mxtal7", 500: "v250_12mxtal8", 600: "v250_12mxtal9", 700: "v250_12mxtala", 800: "v250_12mxtalb", 900: "v250_12mxtalc", 1e3: "v250_12mxtald", 1200: "v250_12mxtale", none: "v250_12mxtalf", "2xs": "v250_12mxtalg", xs: "v250_12mxtalh", sm: "v250_12mxtali", md: "v250_12mxtalj", lg: "v250_12mxtalk", xl: "v250_12mxtall", "2xl": "v250_12mxtalm", "3xl": "v250_12mxtaln", "4xl": "v250_12mxtalo", "5xl": "v250_12mxtalp", "6xl": "v250_12mxtalq", "025": "v250_12mxtalr", "050": "v250_12mxtals", "075": "v250_12mxtalt", gutter: "v250_12mxtalu" }, alignX: { center: "v250_12mxtal1t", left: "v250_12mxtal1u", right: "v250_12mxtal1v", stretch: "v250_12mxtal1w" }, alignY: { center: "v250_12mxtal1x", top: "v250_12mxtal1y", bottom: "v250_12mxtal1z", spaceBetween: "v250_12mxtal20" } }, defaultVariants: { height: "full", space: "none" }, compoundVariants: [] });
+export {
+  v as stack
+};

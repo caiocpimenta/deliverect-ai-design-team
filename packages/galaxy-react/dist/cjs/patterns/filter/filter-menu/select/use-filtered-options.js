@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const i=require("react"),s=require("match-sorter"),r=(e,t)=>e.length===0||!t?e:s.matchSorter(e,t,{keys:["label"]}),l=(e,t)=>i.useMemo(()=>r(e,t),[e,t]);exports.filterOptions=r;exports.useFilteredOptions=l;

@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const t=require("./tabs-action.js"),e=require("./tabs-content.js"),o=require("./tabs-list.js"),r=require("./tabs-root.js"),s=require("./tabs-trigger.js");exports.Action=t.TabsAction;exports.Content=e.TabsContent;exports.List=o.TabsList;exports.Root=r.TabsRoot;exports.Trigger=s.TabsTrigger;

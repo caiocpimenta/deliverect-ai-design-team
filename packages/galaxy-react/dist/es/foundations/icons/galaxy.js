@@ -1,0 +1,44 @@
+import { jsx as o } from "react/jsx-runtime";
+import "../../primitives/avatar/avatar-fallback.js";
+import "../../primitives/avatar/avatar-image.js";
+import "../../primitives/avatar/avatar-root.js";
+import "../../primitives/button/button.js";
+import "../../primitives/card/card.js";
+import "../../primitives/checkbox/checkbox.js";
+import { Icon as p } from "../../primitives/icon/icon.js";
+import "../../primitives/illustration/illustration.js";
+import "../../primitives/input/input-description.js";
+import "../../primitives/input/input-error.js";
+import "../../primitives/input/input-field.js";
+import "../../primitives/input/input-group.js";
+import "../../primitives/input/input-label.js";
+import "../../primitives/input/input-left-addon.js";
+import "../../primitives/input/input-right-addon.js";
+import "../../primitives/input/input-root.js";
+import "../../primitives/link/link.js";
+import "../../primitives/loading-spinner/loading-spinner.js";
+import "../../primitives/logo/logo.js";
+import "../../primitives/progress-tracker/progress-tracker.js";
+import "../../primitives/title-input/title-input.js";
+import "../../primitives/toggle/toggle.js";
+const G = ({ size: r, color: i, ...t }) => /* @__PURE__ */ o(p, { size: r, color: i, children: /* @__PURE__ */ o(
+  "svg",
+  {
+    viewBox: "0 0 32 32",
+    fill: "none",
+    xmlns: "http://www.w3.org/2000/svg",
+    ...t,
+    children: /* @__PURE__ */ o(
+      "path",
+      {
+        d: "M20.8557 20.4341C20.6206 20.67 20.368 20.8874 20.1005 21.0848L17.5384 23.2586C13.2779 26.8732 6.76882 26.4909 3 22.4048L5.00372 20.7049C7.42237 23.3271 11.3656 23.8888 14.4271 22.2484C14.0887 22.1708 13.7557 22.0678 13.4315 21.9395L10.2148 20.907C4.82065 19.1756 1.91129 13.5782 3.71658 8.4048L6.25345 9.21908C5.0953 12.538 6.55838 16.0927 9.56828 17.816C9.47273 17.5027 9.40278 17.1842 9.35822 16.8634L8.67646 13.6484C7.54278 8.30245 11.1425 3.08726 16.7166 2L17.2497 4.51423C13.6725 5.21198 11.1938 8.20633 11.1443 11.5694C11.3835 11.3271 11.643 11.102 11.921 10.8969L14.4616 8.74139C18.7221 5.12678 25.2312 5.50904 29 9.59517L26.9963 11.2951C24.5785 8.67372 20.6371 8.1116 17.576 9.74991C17.9066 9.82717 18.2292 9.92832 18.5412 10.0517L21.7852 11.093C27.1793 12.8243 30.0887 18.4218 28.2834 23.5952L25.7465 22.7809C26.9051 19.4608 25.4406 15.9049 22.4286 14.1822C22.5278 14.5021 22.6012 14.8302 22.6475 15.1636L23.3235 18.3516C24.4572 23.6976 20.8575 28.9127 15.2834 30L14.7502 27.4858C18.3262 26.7883 20.8045 23.7957 20.8557 20.4341ZM13.0004 18.5452C13.9197 19.5327 15.3462 20.0385 16.7964 19.7556C18.2466 19.4728 19.3538 18.4728 19.7979 17.2194C20.2302 15.9619 19.9737 14.5239 18.9931 13.4607C18.0124 12.3975 16.5557 11.9779 15.2017 12.2359C13.8503 12.5057 12.6802 13.4376 12.2105 14.7837C11.7408 16.1298 12.0903 17.5496 13.0004 18.5452Z",
+        fill: "currentColor",
+        fillRule: "evenodd",
+        clipRule: "evenodd"
+      }
+    )
+  }
+) });
+export {
+  G as Galaxy
+};

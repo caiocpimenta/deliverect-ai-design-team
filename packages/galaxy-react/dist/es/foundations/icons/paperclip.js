@@ -1,0 +1,44 @@
+import { jsx as C } from "react/jsx-runtime";
+import "../../primitives/avatar/avatar-fallback.js";
+import "../../primitives/avatar/avatar-image.js";
+import "../../primitives/avatar/avatar-root.js";
+import "../../primitives/button/button.js";
+import "../../primitives/card/card.js";
+import "../../primitives/checkbox/checkbox.js";
+import { Icon as t } from "../../primitives/icon/icon.js";
+import "../../primitives/illustration/illustration.js";
+import "../../primitives/input/input-description.js";
+import "../../primitives/input/input-error.js";
+import "../../primitives/input/input-field.js";
+import "../../primitives/input/input-group.js";
+import "../../primitives/input/input-label.js";
+import "../../primitives/input/input-left-addon.js";
+import "../../primitives/input/input-right-addon.js";
+import "../../primitives/input/input-root.js";
+import "../../primitives/link/link.js";
+import "../../primitives/loading-spinner/loading-spinner.js";
+import "../../primitives/logo/logo.js";
+import "../../primitives/progress-tracker/progress-tracker.js";
+import "../../primitives/title-input/title-input.js";
+import "../../primitives/toggle/toggle.js";
+const Z = ({ size: o, color: r, ...i }) => /* @__PURE__ */ C(t, { size: o, color: r, children: /* @__PURE__ */ C(
+  "svg",
+  {
+    viewBox: "0 0 32 32",
+    fill: "none",
+    xmlns: "http://www.w3.org/2000/svg",
+    ...i,
+    children: /* @__PURE__ */ C(
+      "path",
+      {
+        d: "M20.2025 6.30521C19.7843 6.12994 19.3363 6.04174 18.8845 6.04576C18.4328 6.04978 17.9863 6.14595 17.5712 6.32864C17.1561 6.51133 16.7807 6.7769 16.4668 7.10984L16.4546 7.12256L7.63767 16.155C7.63766 16.155 7.63768 16.155 7.63767 16.155C6.58697 17.2315 5.99666 18.6916 5.99666 20.214C5.99666 21.7365 6.58695 23.1965 7.63767 24.2731C8.68839 25.3496 10.1135 25.9544 11.5994 25.9544C13.0853 25.9544 14.5104 25.3496 15.5611 24.2731C15.5611 24.2731 15.5611 24.2731 15.5611 24.2731L26.2958 13.2738C26.6857 12.8743 27.3178 12.8743 27.7076 13.2737C28.0975 13.6731 28.0975 14.3208 27.7077 14.7202L16.973 25.7195C15.5478 27.1797 13.6149 28 11.5994 28C9.58394 28 7.65101 27.1797 6.22586 25.7195C4.8007 24.2594 4.00006 22.279 4.00006 20.214C4.00006 18.1491 4.8007 16.1687 6.22586 14.7085L15.0371 5.68197C15.5338 5.15681 16.1273 4.73776 16.7832 4.44909C17.4419 4.15919 18.1503 4.00659 18.8672 4.00021C19.5841 3.99383 20.295 4.13378 20.9585 4.41192C21.622 4.69005 22.2248 5.10078 22.7318 5.62015C23.2387 6.13953 23.6396 6.75713 23.911 7.43694C24.1825 8.11675 24.3191 8.84514 24.3129 9.57962C24.3066 10.3141 24.1577 11.0399 23.8748 11.7148C23.593 12.3868 23.184 12.9948 22.6715 13.5037L13.8614 22.5352L13.8489 22.5477C13.2458 23.1448 12.4378 23.4752 11.5992 23.4679C10.7605 23.4606 9.95817 23.116 9.36502 22.5085C8.77187 21.901 8.43535 21.0791 8.42793 20.2198C8.42051 19.3606 8.74279 18.5327 9.32535 17.9145L9.3375 17.9018L18.1545 8.86534C18.5443 8.46584 19.1764 8.46573 19.5663 8.8651C19.9562 9.26446 19.9563 9.91208 19.5665 10.3116L10.7566 19.3409C10.5409 19.5726 10.4217 19.8813 10.4245 20.2017C10.4272 20.5246 10.5537 20.8335 10.7766 21.0618C10.9995 21.2901 11.301 21.4196 11.6162 21.4224C11.9289 21.4251 12.2302 21.3029 12.4563 21.0818L21.2652 12.0516L21.2778 12.0389C21.6027 11.7174 21.8619 11.3327 22.0402 10.9074C22.2186 10.4821 22.3124 10.0247 22.3163 9.56184C22.3203 9.09898 22.2342 8.63996 22.0631 8.21155C21.892 7.78314 21.6394 7.39393 21.3199 7.06663C21.0005 6.73933 20.6206 6.48049 20.2025 6.30521Z",
+        fill: "currentColor",
+        fillRule: "evenodd",
+        clipRule: "evenodd"
+      }
+    )
+  }
+) });
+export {
+  Z as Paperclip
+};

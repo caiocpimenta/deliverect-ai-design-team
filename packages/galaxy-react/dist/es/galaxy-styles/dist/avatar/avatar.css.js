@@ -1,0 +1,10 @@
+/* empty css                           */
+/* empty css                                 */
+/* empty css                          */
+import { createRuntimeFn as a } from "@vanilla-extract/recipes/createRuntimeFn";
+var t = a({ defaultClassName: "v250_14fhww20", variantClassNames: { variant: { circle: "v250_14fhww21", square: "v250_14fhww22" }, size: { xl: "v250_14fhww23", lg: "v250_14fhww24", md: "v250_14fhww25", sm: "v250_14fhww26" }, border: { around: "v250_14fhww27", none: "v250_14fhww28" } }, defaultVariants: { variant: "circle", size: "md", border: "none" }, compoundVariants: [[{ size: "xl", variant: "square" }, "v250_14fhww29"], [{ size: "sm", variant: "square" }, "v250_14fhww2a"]] }), i = "v250_14fhww2b", f = "v250_14fhww2c";
+export {
+  t as avatar,
+  i as avatarFallback,
+  f as avatarImage
+};

@@ -1,0 +1,9 @@
+/* empty css                              */
+/* empty css                                    */
+/* empty css                               */
+/* empty css                        */
+import { createRuntimeFn as a } from "@vanilla-extract/recipes/createRuntimeFn";
+var i = a({ defaultClassName: "v250_1u1fajp0", variantClassNames: { size: { md: "v250_1u1fajp1", sm: "v250_1u1fajp2", xs: "v250_1u1fajp3" }, weight: { regular: "v250_1u1fajp4", medium: "v250_1u1fajp5", bold: "v250_1u1fajp6" }, color: { default: "v250_1njv0an0", secondary: "v250_1njv0an1", inverse: "v250_1njv0an2", placeholder: "v250_1njv0an3", inactive: "v250_1njv0an4", neutral: "v250_1njv0an5", brand: "v250_1njv0an6", success: "v250_1njv0an7", critical: "v250_1njv0an8", warning: "v250_1njv0an9", info: "v250_1njv0ana", magic: "v250_1njv0anb", decorative: "v250_1njv0anc", inherit: "v250_1njv0and", primary: "v250_1njv0ane", text: "v250_1njv0anf" }, overflow: { false: "v250_1u1fajpn" }, breakOnSpaces: { true: "v250_1u1fajpo" }, align: { left: "v250_1u1fajpp", center: "v250_1u1fajpq", right: "v250_1u1fajpr" }, width: { full: "v250_1u1fajps", auto: "v250_1u1fajpt" } }, defaultVariants: { size: "md", weight: "regular", color: "default", overflow: !0, align: "left", width: "auto" }, compoundVariants: [] });
+export {
+  i as text
+};

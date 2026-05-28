@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const a=require("../../primitives/input/input-label.js"),e=a.InputLabel;e.displayName="RadioGroup.Label";exports.RadioGroupLabel=e;

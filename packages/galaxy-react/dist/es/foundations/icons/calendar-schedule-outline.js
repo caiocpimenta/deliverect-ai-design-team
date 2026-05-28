@@ -1,0 +1,62 @@
+import { jsx as o, jsxs as p } from "react/jsx-runtime";
+import "../../primitives/avatar/avatar-fallback.js";
+import "../../primitives/avatar/avatar-image.js";
+import "../../primitives/avatar/avatar-root.js";
+import "../../primitives/button/button.js";
+import "../../primitives/card/card.js";
+import "../../primitives/checkbox/checkbox.js";
+import { Icon as C } from "../../primitives/icon/icon.js";
+import "../../primitives/illustration/illustration.js";
+import "../../primitives/input/input-description.js";
+import "../../primitives/input/input-error.js";
+import "../../primitives/input/input-field.js";
+import "../../primitives/input/input-group.js";
+import "../../primitives/input/input-label.js";
+import "../../primitives/input/input-left-addon.js";
+import "../../primitives/input/input-right-addon.js";
+import "../../primitives/input/input-root.js";
+import "../../primitives/link/link.js";
+import "../../primitives/loading-spinner/loading-spinner.js";
+import "../../primitives/logo/logo.js";
+import "../../primitives/progress-tracker/progress-tracker.js";
+import "../../primitives/title-input/title-input.js";
+import "../../primitives/toggle/toggle.js";
+const I = ({ size: r, color: i, ...t }) => /* @__PURE__ */ o(C, { size: r, color: i, children: /* @__PURE__ */ p(
+  "svg",
+  {
+    viewBox: "0 0 32 32",
+    fill: "none",
+    xmlns: "http://www.w3.org/2000/svg",
+    ...t,
+    children: [
+      /* @__PURE__ */ o(
+        "path",
+        {
+          d: "M22 29.5C26.1421 29.5 29.5 26.1421 29.5 22C29.5 17.8579 26.1421 14.5 22 14.5C17.8579 14.5 14.5 17.8579 14.5 22C14.5 26.1421 17.8579 29.5 22 29.5ZM22 27.5C25.0376 27.5 27.5 25.0376 27.5 22C27.5 18.9624 25.0376 16.5 22 16.5C18.9624 16.5 16.5 18.9624 16.5 22C16.5 25.0376 18.9624 27.5 22 27.5Z",
+          fill: "currentColor",
+          fillRule: "evenodd",
+          clipRule: "evenodd"
+        }
+      ),
+      /* @__PURE__ */ o(
+        "path",
+        {
+          d: "M8.75 2.95833C8.75 2.42906 9.17906 2 9.70833 2C10.2376 2 10.6667 2.42906 10.6667 2.95833V5.83333H18.3333V2.95833C18.3333 2.42906 18.7624 2 19.2917 2C19.8209 2 20.25 2.42906 20.25 2.95833V5.83333H24.4667C25.3135 5.83333 26 6.49343 26 7.30769V12.5417C26 13.0709 25.5709 13.5 25.0417 13.5C24.5124 13.5 24.0833 13.0709 24.0833 12.5417V12H4.91667V23.0833H12.0417C12.5709 23.0833 13 23.5124 13 24.0417C13 24.5709 12.5709 25 12.0417 25H4.53333C3.6865 25 3 24.3399 3 23.5256V7.30769C3 6.49343 3.6865 5.83333 4.53333 5.83333H8.75V2.95833ZM24.0833 10.0833V7.75H4.91667V10.0833H24.0833Z",
+          fill: "currentColor",
+          fillRule: "evenodd",
+          clipRule: "evenodd"
+        }
+      ),
+      /* @__PURE__ */ o(
+        "path",
+        {
+          d: "M21.0499 18.2929C21.4404 17.9024 22.0736 17.9024 22.4641 18.2929L25.9999 21.8284L22.4643 25.364C22.0738 25.7545 21.4407 25.7545 21.0501 25.364C20.6596 24.9734 20.6596 24.3403 21.0501 23.9498L22.1715 22.8284H19.7571C19.2048 22.8284 18.7571 22.3807 18.7571 21.8284C18.7571 21.2761 19.2048 20.8284 19.7571 20.8284L22.1712 20.8284L21.0499 19.7071C20.6594 19.3166 20.6594 18.6834 21.0499 18.2929Z",
+          fill: "currentColor"
+        }
+      )
+    ]
+  }
+) });
+export {
+  I as CalendarScheduleOutline
+};

@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const n=t=>t.range_start&&t.range_end?"standalone":t.range_start?"rangeStart":t.range_middle?"rangeMiddle":t.range_end?"rangeEnd":"standalone",a=t=>t?"filled":"transparent";exports.getDayButtonTypeVariant=n;exports.getDayButtonVariant=a;

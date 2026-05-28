@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const e=require("./page-header-description.js"),r=require("./page-header-header.js"),a=require("./page-header-root.js"),t=require("./page-header-title.js");exports.Description=e.PageHeaderDescription;exports.Header=r.PageHeaderHeader;exports.Root=a.PageHeaderRoot;exports.Title=t.PageHeaderTitle;

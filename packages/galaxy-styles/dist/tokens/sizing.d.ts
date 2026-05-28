@@ -1,0 +1,25 @@
+export declare const sizing: {
+    "0": string;
+    "025": string;
+    "050": string;
+    "075": string;
+    "100": string;
+    "150": string;
+    "200": string;
+    "225": string;
+    "250": string;
+    "300": string;
+    "350": string;
+    "400": string;
+    "450": string;
+    "500": string;
+    "550": string;
+    "600": string;
+    "700": string;
+    "750": string;
+    "800": string;
+    "900": string;
+    "1000": string;
+    "1200": string;
+};
+export type Sizing = keyof typeof sizing;

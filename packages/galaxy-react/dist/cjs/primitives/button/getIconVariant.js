@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const f=({LeadingIcon:t,TrailingIcon:e,Icon:u,children:r})=>{if(t&&e)return"both";if(e&&r)return"right";if(t&&r)return"left";if(t||e||u)return"single"};exports.getIconVariant=f;

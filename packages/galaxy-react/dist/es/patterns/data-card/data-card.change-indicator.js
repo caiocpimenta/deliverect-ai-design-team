@@ -1,0 +1,41 @@
+import { jsx as t } from "react/jsx-runtime";
+import { forwardRef as f } from "react";
+import "../../primitives/avatar/avatar-fallback.js";
+import "../../primitives/avatar/avatar-image.js";
+import "../../primitives/avatar/avatar-root.js";
+import "../../primitives/button/button.js";
+import "../../primitives/card/card.js";
+import "../../primitives/checkbox/checkbox.js";
+import "../../primitives/icon/icon.js";
+import "../../primitives/illustration/illustration.js";
+import "../../primitives/input/input-description.js";
+import "../../primitives/input/input-error.js";
+import "../../primitives/input/input-field.js";
+import "../../primitives/input/input-group.js";
+import "../../primitives/input/input-label.js";
+import "../../primitives/input/input-left-addon.js";
+import "../../primitives/input/input-right-addon.js";
+import "../../primitives/input/input-root.js";
+import "../../primitives/link/link.js";
+import "../../primitives/loading-spinner/loading-spinner.js";
+import "../../primitives/logo/logo.js";
+import "../../primitives/progress-tracker/progress-tracker.js";
+import "../../primitives/title-input/title-input.js";
+import "../../primitives/toggle/toggle.js";
+import { Subtract as u } from "../../foundations/icons/subtract.js";
+import { TriangleDirectionDown as g } from "../../foundations/icons/triangle-direction-down.js";
+import { TriangleDirectionUp as h } from "../../foundations/icons/triangle-direction-up.js";
+import "../../foundations/layout/box/box.js";
+import "../../foundations/layout/inline/inline.js";
+import "../../foundations/layout/stack/stack.js";
+import "../../foundations/typography/heading/heading.js";
+import "../../foundations/typography/text/text.js";
+import { Badge as D } from "../../components/badge/badge.js";
+const I = f(({ children: i, relativeChange: r, reverse: m, ...p }, a) => {
+  const o = r > 0, e = m ? !o : o, n = () => r === 0 ? "neutral" : e ? "success" : "critical", s = () => r === 0 ? /* @__PURE__ */ t(u, { "data-testid": "change-neutral" }) : o ? /* @__PURE__ */ t(h, { "data-testid": "change-increase" }) : /* @__PURE__ */ t(g, { "data-testid": "change-decrease" }), c = n(), d = s();
+  return /* @__PURE__ */ t(D, { size: "sm", ...p, Icon: d, status: c, ref: a, children: i });
+});
+I.displayName = "DataCard.ChangeIndicator";
+export {
+  I as DataCardChangeIndicator
+};

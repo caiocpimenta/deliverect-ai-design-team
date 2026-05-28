@@ -1,0 +1,1 @@
+"use client";"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const t=require("../shared/select-item.js"),e=t.SelectItem;e.displayName="MultiSelect.Item";exports.MultiSelectItem=e;

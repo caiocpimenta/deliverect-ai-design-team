@@ -1,0 +1,64 @@
+import { jsx as o, jsxs as p } from "react/jsx-runtime";
+import "../../primitives/avatar/avatar-fallback.js";
+import "../../primitives/avatar/avatar-image.js";
+import "../../primitives/avatar/avatar-root.js";
+import "../../primitives/button/button.js";
+import "../../primitives/card/card.js";
+import "../../primitives/checkbox/checkbox.js";
+import { Icon as l } from "../../primitives/icon/icon.js";
+import "../../primitives/illustration/illustration.js";
+import "../../primitives/input/input-description.js";
+import "../../primitives/input/input-error.js";
+import "../../primitives/input/input-field.js";
+import "../../primitives/input/input-group.js";
+import "../../primitives/input/input-label.js";
+import "../../primitives/input/input-left-addon.js";
+import "../../primitives/input/input-right-addon.js";
+import "../../primitives/input/input-root.js";
+import "../../primitives/link/link.js";
+import "../../primitives/loading-spinner/loading-spinner.js";
+import "../../primitives/logo/logo.js";
+import "../../primitives/progress-tracker/progress-tracker.js";
+import "../../primitives/title-input/title-input.js";
+import "../../primitives/toggle/toggle.js";
+const S = ({ size: r, color: i, ...t }) => /* @__PURE__ */ o(l, { size: r, color: i, children: /* @__PURE__ */ p(
+  "svg",
+  {
+    viewBox: "0 0 32 32",
+    fill: "none",
+    xmlns: "http://www.w3.org/2000/svg",
+    ...t,
+    children: [
+      /* @__PURE__ */ o(
+        "path",
+        {
+          d: "M4.53382 11.4586C4.53382 10.9176 4.9724 10.4791 5.51342 10.4791H12.3568C12.7351 10.4791 13.0796 10.6968 13.2418 11.0386C13.404 11.3803 13.355 11.7849 13.1158 12.0779L7.57699 18.8663H12.3568C12.8979 18.8663 13.3364 19.3049 13.3364 19.8459C13.3364 20.3869 12.8979 20.8255 12.3568 20.8255H5.51342C5.13515 20.8255 4.79069 20.6077 4.62847 20.266C4.46626 19.9243 4.51528 19.5197 4.75442 19.2266L10.2933 12.4382H5.51342C4.9724 12.4382 4.53382 11.9997 4.53382 11.4586Z",
+          fill: "currentColor",
+          fillRule: "evenodd",
+          clipRule: "evenodd"
+        }
+      ),
+      /* @__PURE__ */ o(
+        "path",
+        {
+          d: "M15.7413 5.20493C15.7413 4.66392 16.1799 4.22534 16.7209 4.22534H21.8246C22.2029 4.22534 22.5474 4.44315 22.7096 4.78489C22.8718 5.12663 22.8227 5.53123 22.5835 5.8243L18.7848 10.4791H21.8246C22.3656 10.4791 22.8042 10.9176 22.8042 11.4586C22.8042 11.9997 22.3656 12.4382 21.8246 12.4382H16.7209C16.3426 12.4382 15.9982 12.2204 15.836 11.8787C15.6738 11.5369 15.7228 11.1324 15.962 10.8393L19.7607 6.18453H16.7209C16.1799 6.18453 15.7413 5.74595 15.7413 5.20493Z",
+          fill: "currentColor",
+          fillRule: "evenodd",
+          clipRule: "evenodd"
+        }
+      ),
+      /* @__PURE__ */ o(
+        "path",
+        {
+          d: "M17.3968 16.8562C17.3968 16.3152 17.8354 15.8766 18.3764 15.8766H26.4875C26.8657 15.8766 27.2102 16.0944 27.3724 16.4361C27.5346 16.7779 27.4856 17.1824 27.2464 17.4755L20.4401 25.8165H26.4875C27.0285 25.8165 27.467 26.2551 27.467 26.7961C27.467 27.3371 27.0285 27.7757 26.4875 27.7757H18.3764C17.9982 27.7757 17.6537 27.5579 17.4915 27.2162C17.3293 26.8745 17.3783 26.4699 17.6175 26.1768L24.4238 17.8358H18.3764C17.8354 17.8358 17.3968 17.3972 17.3968 16.8562Z",
+          fill: "currentColor",
+          fillRule: "evenodd",
+          clipRule: "evenodd"
+        }
+      )
+    ]
+  }
+) });
+export {
+  S as Sleep
+};

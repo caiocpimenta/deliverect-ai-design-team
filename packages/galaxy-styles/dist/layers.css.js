@@ -1,0 +1,17 @@
+import { globalLayer, layer } from "@vanilla-extract/css";
+export const resetLayer = globalLayer("galaxy-reset");
+export const designSystemLayer = layer("designSystem");
+export const utilitiesLayer = layer({ parent: designSystemLayer }, "utilities");
+export const typographyLayer = layer({ parent: designSystemLayer }, "typography");
+export const layoutLayer = layer({ parent: designSystemLayer }, "layout");
+export const primitivesLayer = layer({ parent: designSystemLayer }, "primitives");
+export const componentsLayer = layer({ parent: designSystemLayer }, "components");
+export const sprinklesLayer = layer({ parent: designSystemLayer }, "sprinkles");
+export const createLayerHelper = (layer) => (rule) => ({ "@layer": { [layer]: rule } });
+export const reset = createLayerHelper(resetLayer);
+export const dsUtilities = createLayerHelper(utilitiesLayer);
+export const dsTypography = createLayerHelper(typographyLayer);
+export const dsLayout = createLayerHelper(layoutLayer);
+export const dsPrimitives = createLayerHelper(primitivesLayer);
+export const dsComponents = createLayerHelper(componentsLayer);
+export const dsSprinkles = createLayerHelper(sprinklesLayer);

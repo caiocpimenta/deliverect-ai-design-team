@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const t=(e,i)=>i===void 0?e:`${e}.${i}`,o=e=>e.filter!==void 0,l=e=>e.filterConfigs!==void 0;exports.isNestedFilterConfig=l;exports.isSingleFilterConfig=o;exports.resolveFilterKey=t;
