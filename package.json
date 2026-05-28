@@ -11,8 +11,8 @@
     "deploy": "vite build && gh-pages -d dist"
   },
   "dependencies": {
-    "@deliverect/galaxy-react": "file:../Galaxy/packages/galaxy-react",
-    "@deliverect/galaxy-styles": "file:../Galaxy/packages/galaxy-styles",
+    "@deliverect/galaxy-react": "file:./packages/galaxy-react",
+    "@deliverect/galaxy-styles": "file:./packages/galaxy-styles",
     "@radix-ui/react-avatar": "^1.1.0",
     "@radix-ui/react-checkbox": "^1.1.1",
     "@radix-ui/react-collapsible": "^1.1.2",
