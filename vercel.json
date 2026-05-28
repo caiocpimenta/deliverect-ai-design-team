@@ -1,0 +1,6 @@
+{
+  "buildCommand": "echo 'pre-built'",
+  "outputDirectory": "dist",
+  "installCommand": "echo 'skip'",
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}

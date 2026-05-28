@@ -1,0 +1,21 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5;
+}
+
+#root {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+}
+
+/* Galaxy's DataCard.Title base class always applies text-decoration: underline.
+   Override it globally — clickable titles restore underline on hover via inline styles. */
+.v250_1hrjdma3 {
+  text-decoration: none;
+}
