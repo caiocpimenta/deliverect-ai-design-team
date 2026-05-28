@@ -4,6 +4,7 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/deliverect-ai-design-team/',
   plugins: [react()],
   resolve: {
     // Force all React imports (including those inside galaxy-react dist files)
