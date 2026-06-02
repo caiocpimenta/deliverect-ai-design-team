@@ -38,6 +38,43 @@ import { type AgentPromo } from '../data/mockAgents'
 import { MOCK_LOGS } from '../data/mockLogs'
 import { AgentInsightsTab, ColHeader, MOCK_FIX_RECORDS, formatDate, LocationFixDrawer, type FixRecord } from '../components/AgentAnalytics'
 
+// ─── Month interval helpers ───────────────────────────────────────────────────
+
+function generateMonthIntervals(agentCreatedAt: string) {
+  const today = new Date()
+  const start = new Date(agentCreatedAt)
+  const intervals: Array<{ key: string; label: string }> = []
+  let year = start.getFullYear()
+  let month = start.getMonth() + 1
+  while (year < today.getFullYear() || (year === today.getFullYear() && month <= today.getMonth() + 1)) {
+    const key = `${year}-${String(month).padStart(2, '0')}`
+    const isCurrentMonth = today.getFullYear() === year && today.getMonth() + 1 === month
+    const label = new Date(year, month - 1, 1).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
+    intervals.unshift({ key, label: isCurrentMonth ? `${label} (current)` : label })
+    if (++month > 12) { month = 1; year++ }
+  }
+  return intervals
+}
+
+function getMonthInterval(monthKey: string) {
+  const [y, m] = monthKey.split('-').map(Number)
+  const start = new Date(y, m - 1, 1)
+  const today = new Date()
+  const isCurrentMonth = today.getFullYear() === y && today.getMonth() + 1 === m
+  const end = isCurrentMonth
+    ? new Date(today.getFullYear(), today.getMonth(), today.getDate())
+    : new Date(y, m, 0)
+  const daysInInterval = Math.round((end.getTime() - start.getTime()) / 86400000) + 1
+  return { start, end, daysInInterval }
+}
+
+function getDaysActive(addedAt: string, interval: ReturnType<typeof getMonthInterval>) {
+  const added = new Date(addedAt)
+  if (added > interval.end) return 0
+  const locationStart = added > interval.start ? added : interval.start
+  return Math.round((interval.end.getTime() - locationStart.getTime()) / 86400000) + 1
+}
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function verdictBadgeStatus(verdict: 'inconclusive' | 'positive' | 'negative') {
@@ -199,7 +236,10 @@ export function AgentDetailPage() {
   const [locationSearch, setLocationSearch] = useState('')
   const [locationStatusFilter, setLocationStatusFilter] = useState<string[]>([])
   const [locationNamesFilter, setLocationNamesFilter] = useState<string[]>([])
-  const [overviewDateFilter, setOverviewDateFilter] = useState('last_30_days')
+  const [overviewDateFilter, setOverviewDateFilter] = useState(() => {
+    const t = new Date()
+    return `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}`
+  })
   const PAGE_SIZE = 25
 
   const agent = agents.find(a => a.id === agentId) ?? {
@@ -296,39 +336,6 @@ export function AgentDetailPage() {
       <Page.Body space="250" py="250">
         {activeTab === 'overview' && (
           <>
-            {/* Metrics row — fixer agent */}
-            {isFixerAgent && (
-              <Inline space="150" width="full">
-                {([
-                  { tooltip: 'Orders with issues that the agent successfully corrected', title: 'Orders resolved',           value: '142'    },
-                  { tooltip: 'Potential issues detected and stopped before impacting the kitchen', title: 'Issues prevented', value: '89'     },
-                  { tooltip: 'Average value of orders that contained an issue',          title: 'Avg. affected order value', value: '£28.50' },
-                  { tooltip: 'Estimated revenue protected from order errors and cancellations', title: 'Revenue protected',  value: '£6,555' },
-                ] as { tooltip: string; title: string; value: string }[]).map(card => (
-                  <DataCard.Root key={card.title} flex={1}>
-                    <DataCard.Header>
-                      <DataCard.Title tooltip={card.tooltip}>
-                        <span
-                          role="button"
-                          tabIndex={0}
-                          onClick={() => setActiveTab('insights')}
-                          onKeyDown={e => e.key === 'Enter' && setActiveTab('insights')}
-                          onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
-                          onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
-                          style={{ cursor: 'pointer', textDecoration: 'none' }}
-                        >
-                          {card.title}
-                        </span>
-                      </DataCard.Title>
-                    </DataCard.Header>
-                    <DataCard.Content>
-                      <DataCard.Value>{card.value}</DataCard.Value>
-                    </DataCard.Content>
-                  </DataCard.Root>
-                ))}
-              </Inline>
-            )}
-
             {/* Metrics row — menu agent */}
             {isMenuAgent && (
               <Inline space="150" width="full">
@@ -379,16 +386,39 @@ export function AgentDetailPage() {
             ) : isFixerAgent && agent.locations.length > 0 ? (
               // ── Order Fixer: per-location fix summary ──────────────────────
               <>{(() => {
-                const allLocationOptions = agent.locations.map(l => ({ label: l.name, value: l.name }))
-                const filteredLocations = agent.locations.filter(loc => {
+                const interval = getMonthInterval(overviewDateFilter)
+                const monthIntervals = generateMonthIntervals(agent.createdAt)
+                const selectedIntervalLabel = monthIntervals.find(i => i.key === overviewDateFilter)?.label ?? 'Current month'
+
+                const intervalLocations = agent.locations.filter(
+                  loc => getDaysActive(loc.addedAt, interval) > 0
+                )
+                const allLocationOptions = intervalLocations.map(l => ({ label: l.name, value: l.name }))
+                const filteredLocations = intervalLocations.filter(loc => {
                   const matchesSearch = loc.name.toLowerCase().includes(locationSearch.toLowerCase())
                   const matchesStatus = locationStatusFilter.length === 0 || locationStatusFilter.includes(loc.status)
                   const matchesLocation = locationNamesFilter.length === 0 || locationNamesFilter.includes(loc.name)
                   return matchesSearch && matchesStatus && matchesLocation
                 })
+
+                const visibleNames = new Set(filteredLocations.map(l => l.name))
+                const intervalRecords = MOCK_FIX_RECORDS.filter(r =>
+                  r.agentId === agent.id &&
+                  visibleNames.has(r.location) &&
+                  new Date(r.lastErrorDate) >= interval.start &&
+                  new Date(r.lastErrorDate) <= interval.end
+                )
+                const totalOrdersResolved  = intervalRecords.reduce((s, r) => s + r.ordersRecovered, 0)
+                const issuesPrevented       = intervalRecords.length
+                const avgAffectedAov        = intervalRecords.length > 0
+                  ? intervalRecords.reduce((s, r) => s + r.avgOrderValue, 0) / intervalRecords.length : 0
+                const totalRevenueProtected = intervalRecords.reduce((s, r) => s + r.revenueSaved, 0)
+
                 const pagedLocations = filteredLocations.slice((overviewPage - 1) * PAGE_SIZE, overviewPage * PAGE_SIZE)
+
                 return (
                   <>
+                  {/* Filter row */}
                   <Inline alignX="start" alignY="center" width="full" space="150">
                     <div style={{ height: 36, display: 'flex', alignItems: 'stretch' }}>
                       <Input.Group style={{ width: 280, height: '100%' }}>
@@ -442,21 +472,16 @@ export function AgentDetailPage() {
                             ),
                           },
                           date: {
-                            label: 'Date',
+                            label: 'Period',
                             filter: (
                               <Filter.Select
                                 id="date"
                                 icon={<CalendarOutline size="sm" />}
-                                tagLabel="Last 30 days"
+                                tagLabel={selectedIntervalLabel}
                                 applyLabel="Apply"
                                 value={overviewDateFilter}
-                                options={[
-                                  { label: 'Last 7 days',   value: 'last_7_days'   },
-                                  { label: 'Last 30 days',  value: 'last_30_days'  },
-                                  { label: 'Last 3 months', value: 'last_3_months' },
-                                  { label: 'Last 6 months', value: 'last_6_months' },
-                                ]}
-                                onValueApplyChange={(val) => setOverviewDateFilter(val as string)}
+                                options={monthIntervals.map(i => ({ label: i.label, value: i.key }))}
+                                onValueApplyChange={(val) => { setOverviewDateFilter(val as string); setOverviewPage(1) }}
                               />
                             ),
                           },
@@ -464,91 +489,124 @@ export function AgentDetailPage() {
                       />
                     </div>
                   </Inline>
-              <Table.Root width="full">
-                <Table.Header>
-                  <Table.Row sticky>
-                    <Table.ColumnHeaderCell noHover>Location</Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell noHover><ColHeader label="Created time"          tip="The date this location was added to the agent." /></Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell noHover><ColHeader label="Last Error"            tip="Date the most recent error for this location was detected." /></Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell noHover><ColHeader label="Protected Orders (5d)" tip="Total orders across all PLUs in the 5 days after each fix, with no reported issues." /></Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell noHover><ColHeader label="Avg. Order Value"      tip="Average value of orders containing a fixed PLU after the fix was applied." /></Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell noHover><ColHeader label="Revenue Protected"     tip="Estimated revenue protected by correcting PLU errors at this location." /></Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell noHover><ColHeader label="Total Fixes"            tip="Total number of fixes the agent has applied at this location." /></Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell noHover width="1"><ColHeader label="Status"      tip="Whether this location is currently being monitored by the agent." /></Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell noHover width="1" />
-                  </Table.Row>
-                </Table.Header>
-                <Table.Body>
-                  {pagedLocations.map(loc => {
-                    const locRecords = MOCK_FIX_RECORDS.filter(r => r.agentId === agent.id && r.location === loc.name)
-                    const lastError   = locRecords.sort((a, b) => b.lastErrorDate.localeCompare(a.lastErrorDate))[0]
-                    const totalOrders = locRecords.reduce((s, r) => s + r.ordersRecovered, 0)
-                    const avgAov      = locRecords.length > 0 ? locRecords.reduce((s, r) => s + r.avgOrderValue, 0) / locRecords.length : 0
-                    const totalRev    = locRecords.reduce((s, r) => s + r.revenueSaved, 0)
-                    return (
-                      <Table.Row
-                        key={loc.id}
-                        style={{ cursor: locRecords.length > 0 ? 'pointer' : 'default' }}
-                        onClick={() => { if (locRecords.length > 0) { setSelectedLocation({ name: loc.name, records: locRecords }); setFixDrawerOpen(true) } }}
-                      >
-                        <Table.RowHeaderCell>
-                          <Text weight="medium" size="sm">{loc.name}</Text>
-                        </Table.RowHeaderCell>
-                        <Table.Cell>
-                          <Text size="sm" color="secondary">
-                            {new Date(agent.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-                          </Text>
-                        </Table.Cell>
-                        <Table.Cell>
-                          <Text size="sm" color="secondary">{lastError ? formatDate(lastError.lastErrorDate) : '—'}</Text>
-                        </Table.Cell>
-                        <Table.Cell>
-                          <Text size="sm">{totalOrders > 0 ? totalOrders : '—'}</Text>
-                        </Table.Cell>
-                        <Table.Cell>
-                          <Text size="sm">{avgAov > 0 ? `£${avgAov.toFixed(2)}` : '—'}</Text>
-                        </Table.Cell>
-                        <Table.Cell>
-                          <Text size="sm" weight="medium" style={{ color: totalRev > 0 ? vars.colors.text.success.default : undefined }}>
-                            {totalRev > 0 ? `£${totalRev.toFixed(2)}` : '—'}
-                          </Text>
-                        </Table.Cell>
-                        <Table.Cell>
-                          <Text size="sm">{locRecords.length > 0 ? locRecords.length : '—'}</Text>
-                        </Table.Cell>
-                        <Table.Cell>
-                          {loc.status === 'active'
-                            ? <Badge size="sm" status="success">Active</Badge>
-                            : <Badge size="sm" status="critical">Inactive</Badge>
-                          }
-                        </Table.Cell>
-                        <Table.Cell onClick={e => e.stopPropagation()}>
-                          <DropdownMenu.Root>
-                            <DropdownMenu.Trigger asChild>
-                              <Button variant="transparent" size="sm" Icon={<MenuEllipsisDirectionVertical size="lg" />} aria-label="Location actions" />
-                            </DropdownMenu.Trigger>
-                            <DropdownMenu.Content side="left" align="start">
-                              <DropdownMenu.Item icon={<GraphBarOutline />} onClick={() => setActiveTab('insights')}>
-                                View insights
-                              </DropdownMenu.Item>
-                            </DropdownMenu.Content>
-                          </DropdownMenu.Root>
-                        </Table.Cell>
+
+                  {/* DataCards — below filters, reactive to all filters */}
+                  <Inline space="150" width="full">
+                    {([
+                      { tooltip: 'Orders with issues that the agent successfully corrected',           title: 'Orders resolved',           value: String(totalOrdersResolved) },
+                      { tooltip: 'Potential issues detected and stopped before impacting the kitchen', title: 'Issues prevented',          value: String(issuesPrevented) },
+                      { tooltip: 'Average value of orders that contained an issue',                    title: 'Avg. affected order value', value: avgAffectedAov > 0 ? `£${avgAffectedAov.toFixed(2)}` : '—' },
+                      { tooltip: 'Estimated revenue protected from order errors and cancellations',    title: 'Revenue protected',         value: totalRevenueProtected > 0 ? `£${totalRevenueProtected.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '—' },
+                    ] as { tooltip: string; title: string; value: string }[]).map(card => (
+                      <DataCard.Root key={card.title} flex={1}>
+                        <DataCard.Header>
+                          <DataCard.Title tooltip={card.tooltip}>{card.title}</DataCard.Title>
+                        </DataCard.Header>
+                        <DataCard.Content>
+                          <DataCard.Value>{card.value}</DataCard.Value>
+                        </DataCard.Content>
+                      </DataCard.Root>
+                    ))}
+                  </Inline>
+
+                  {/* Location table */}
+                  <Table.Root width="full">
+                    <Table.Header>
+                      <Table.Row sticky>
+                        <Table.ColumnHeaderCell noHover>Location</Table.ColumnHeaderCell>
+                        <Table.ColumnHeaderCell noHover><ColHeader label="Added"                  tip="The date this location was enrolled in the agent." /></Table.ColumnHeaderCell>
+                        <Table.ColumnHeaderCell noHover><ColHeader label="Days active"            tip="Days this location was active within the selected period." /></Table.ColumnHeaderCell>
+                        <Table.ColumnHeaderCell noHover><ColHeader label="Last Error"             tip="Date the most recent error for this location was detected." /></Table.ColumnHeaderCell>
+                        <Table.ColumnHeaderCell noHover><ColHeader label="Protected Orders (5d)"  tip="Total orders across all PLUs in the 5 days after each fix, with no reported issues." /></Table.ColumnHeaderCell>
+                        <Table.ColumnHeaderCell noHover><ColHeader label="Avg. Order Value"       tip="Average value of orders containing a fixed PLU after the fix was applied." /></Table.ColumnHeaderCell>
+                        <Table.ColumnHeaderCell noHover><ColHeader label="Revenue Protected"      tip="Estimated revenue protected by correcting PLU errors at this location." /></Table.ColumnHeaderCell>
+                        <Table.ColumnHeaderCell noHover><ColHeader label="Total Fixes"            tip="Total number of fixes the agent has applied at this location in the selected period." /></Table.ColumnHeaderCell>
+                        <Table.ColumnHeaderCell noHover width="1"><ColHeader label="Status"       tip="Whether this location is currently being monitored by the agent." /></Table.ColumnHeaderCell>
+                        <Table.ColumnHeaderCell noHover width="1" />
                       </Table.Row>
-                    )
-                  })}
-                </Table.Body>
-              </Table.Root>
-              <Inline alignX="right" width="full">
-                <Pagination
-                  total={filteredLocations.length}
-                  page={overviewPage}
-                  pageSize={PAGE_SIZE}
-                  subject="locations"
-                  onPageChange={setOverviewPage}
-                />
-              </Inline>
-              </>
+                    </Table.Header>
+                    <Table.Body>
+                      {pagedLocations.map(loc => {
+                        const daysActive = getDaysActive(loc.addedAt, interval)
+                        const locRecords = MOCK_FIX_RECORDS.filter(r =>
+                          r.agentId === agent.id &&
+                          r.location === loc.name &&
+                          new Date(r.lastErrorDate) >= interval.start &&
+                          new Date(r.lastErrorDate) <= interval.end
+                        )
+                        const lastError   = locRecords.sort((a, b) => b.lastErrorDate.localeCompare(a.lastErrorDate))[0]
+                        const totalOrders = locRecords.reduce((s, r) => s + r.ordersRecovered, 0)
+                        const avgAov      = locRecords.length > 0 ? locRecords.reduce((s, r) => s + r.avgOrderValue, 0) / locRecords.length : 0
+                        const totalRev    = locRecords.reduce((s, r) => s + r.revenueSaved, 0)
+                        return (
+                          <Table.Row
+                            key={loc.id}
+                            style={{ cursor: locRecords.length > 0 ? 'pointer' : 'default' }}
+                            onClick={() => { if (locRecords.length > 0) { setSelectedLocation({ name: loc.name, records: locRecords }); setFixDrawerOpen(true) } }}
+                          >
+                            <Table.RowHeaderCell>
+                              <Text weight="medium" size="sm">{loc.name}</Text>
+                            </Table.RowHeaderCell>
+                            <Table.Cell>
+                              <Text size="sm" color="secondary">
+                                {new Date(loc.addedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                              </Text>
+                            </Table.Cell>
+                            <Table.Cell>
+                              <Text size="sm" color={daysActive < interval.daysInInterval ? 'secondary' : undefined}>
+                                {daysActive} / {interval.daysInInterval}
+                              </Text>
+                            </Table.Cell>
+                            <Table.Cell>
+                              <Text size="sm" color="secondary">{lastError ? formatDate(lastError.lastErrorDate) : '—'}</Text>
+                            </Table.Cell>
+                            <Table.Cell>
+                              <Text size="sm">{totalOrders > 0 ? totalOrders : '—'}</Text>
+                            </Table.Cell>
+                            <Table.Cell>
+                              <Text size="sm">{avgAov > 0 ? `£${avgAov.toFixed(2)}` : '—'}</Text>
+                            </Table.Cell>
+                            <Table.Cell>
+                              <Text size="sm" weight="medium" style={{ color: totalRev > 0 ? vars.colors.text.success.default : undefined }}>
+                                {totalRev > 0 ? `£${totalRev.toFixed(2)}` : '—'}
+                              </Text>
+                            </Table.Cell>
+                            <Table.Cell>
+                              <Text size="sm">{locRecords.length > 0 ? locRecords.length : '—'}</Text>
+                            </Table.Cell>
+                            <Table.Cell>
+                              {loc.status === 'active'
+                                ? <Badge size="sm" status="success">Active</Badge>
+                                : <Badge size="sm" status="critical">Inactive</Badge>
+                              }
+                            </Table.Cell>
+                            <Table.Cell onClick={e => e.stopPropagation()}>
+                              <DropdownMenu.Root>
+                                <DropdownMenu.Trigger asChild>
+                                  <Button variant="transparent" size="sm" Icon={<MenuEllipsisDirectionVertical size="lg" />} aria-label="Location actions" />
+                                </DropdownMenu.Trigger>
+                                <DropdownMenu.Content side="left" align="start">
+                                  <DropdownMenu.Item icon={<GraphBarOutline />} onClick={() => setActiveTab('insights')}>
+                                    View insights
+                                  </DropdownMenu.Item>
+                                </DropdownMenu.Content>
+                              </DropdownMenu.Root>
+                            </Table.Cell>
+                          </Table.Row>
+                        )
+                      })}
+                    </Table.Body>
+                  </Table.Root>
+                  <Inline alignX="right" width="full">
+                    <Pagination
+                      total={filteredLocations.length}
+                      page={overviewPage}
+                      pageSize={PAGE_SIZE}
+                      subject="locations"
+                      onPageChange={setOverviewPage}
+                    />
+                  </Inline>
+                  </>
                 )
               })()}</>
 

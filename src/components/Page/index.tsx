@@ -50,6 +50,26 @@ function Root({ children, flush = false, ...rest }: StackProps & { flush?: boole
 }
 
 
+function Header({ children, ...rest }: InlineProps) {
+  const { isScrolled } = useContext(ScrollContext)
+  return (
+    <Inline
+      px="300"
+      py="200"
+      alignX="spaceBetween"
+      alignY="center"
+      style={{
+        flexShrink: 0,
+        borderBottom: `1px solid ${isScrolled ? vars.colors.border.neutral.default.default : 'transparent'}`,
+        transition: 'border-color 0.15s ease',
+      }}
+      {...rest}
+    >
+      {children}
+    </Inline>
+  )
+}
+
 function Body({ children, ...rest }: StackProps) {
   const { setIsScrolled, setCanScrollDown } = useContext(ScrollContext)
   const ref = useRef<HTMLElement>(null)
@@ -100,4 +120,4 @@ function Footer({ progressBar, children, ...rest }: InlineProps & { progressBar?
   )
 }
 
-export const Page = { Root, Body, Footer }
+export const Page = { Root, Header, Body, Footer }
