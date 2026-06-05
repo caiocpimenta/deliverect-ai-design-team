@@ -611,7 +611,7 @@ export function AgentDetailPage() {
                     <Table.ColumnHeaderCell noHover><ColHeader label="Locations" tip="Metrics reflect location-level data. Multiple Autonomous Menu agents in the same location can share similar results." /></Table.ColumnHeaderCell>
                     <Table.ColumnHeaderCell noHover>Created time</Table.ColumnHeaderCell>
                     <Table.ColumnHeaderCell noHover>Last optimization</Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell noHover>Optimisation runs</Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell noHover>Optimization cycles</Table.ColumnHeaderCell>
                     <Table.ColumnHeaderCell noHover><ColHeader label="Total orders" tip="Total orders received after the agent was set up, compared to the same number of days before." /></Table.ColumnHeaderCell>
                     <Table.ColumnHeaderCell noHover><ColHeader label="Total revenue" tip="Total revenue earned after the agent was set up, compared to the same number of days before." /></Table.ColumnHeaderCell>
                     <Table.ColumnHeaderCell noHover><ColHeader label="Daily AOV" tip="Average daily order value after the agent was set up, compared to the same number of days before." /></Table.ColumnHeaderCell>
@@ -640,7 +640,7 @@ export function AgentDetailPage() {
                         <Text size="sm" color="secondary">
                           {(() => {
                             const last = MOCK_LOGS
-                              .filter(l => l.location === loc.name && l.logType === 'optimisation')
+                              .filter(l => l.agentId === agent.id && l.location === loc.name && l.logType === 'optimisation')
                               .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())[0]
                             return last
                               ? new Date(last.timestamp).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
@@ -650,7 +650,7 @@ export function AgentDetailPage() {
                       </Table.Cell>
                       <Table.Cell>
                         <Text size="sm">
-                          {MOCK_LOGS.filter(l => l.location === loc.name && l.logType === 'optimisation').length || '—'}
+                          {MOCK_LOGS.filter(l => l.agentId === agent.id && l.location === loc.name && l.logType === 'optimisation').length || '—'}
                         </Text>
                       </Table.Cell>
                       <Table.Cell><Text size="sm">{loc.totalOrders.toLocaleString()}</Text></Table.Cell>

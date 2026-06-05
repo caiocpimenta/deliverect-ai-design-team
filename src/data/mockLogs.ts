@@ -1,4 +1,4 @@
-import { type AgentType } from './mockAgents'
+import { MOCK_AGENTS, type AgentType } from './mockAgents'
 
 export type LogType = 'optimisation' | 'publication' | 'report'
 
@@ -430,7 +430,7 @@ function generateMenuCycleLogs(opts: {
   agentId: string
   agentName: string
   locations: string[]
-  cyclesPerLocation: number
+  cyclesPerLocation: number | ((locIdx: number) => number)
   idPrefix: string
   latestCycleTimestamp: string
 }): AgentLog[] {
@@ -439,14 +439,18 @@ function generateMenuCycleLogs(opts: {
   const HOUR = 60 * 60 * 1000
   const latest = new Date(opts.latestCycleTimestamp).getTime()
 
-  // Optimisation time for cycle c (1 = oldest, N = most recent), staggered per location.
-  const optTime = (locIdx: number, c: number) =>
-    new Date(latest - (opts.cyclesPerLocation - c) * 7 * DAY - locIdx * DAY)
+  const cyclesFor = (locIdx: number) =>
+    typeof opts.cyclesPerLocation === 'function' ? opts.cyclesPerLocation(locIdx) : opts.cyclesPerLocation
+
+  // Optimisation time for cycle c (1 = oldest, n = most recent), staggered per location.
+  const optTime = (locIdx: number, c: number, n: number) =>
+    new Date(latest - (n - c) * 7 * DAY - locIdx * DAY)
 
   opts.locations.forEach((location, locIdx) => {
-    for (let c = 1; c <= opts.cyclesPerLocation; c++) {
+    const n = cyclesFor(locIdx)
+    for (let c = 1; c <= n; c++) {
       const ov = MENU_OPT_VARIANTS[(locIdx + c) % MENU_OPT_VARIANTS.length]
-      const tOpt = optTime(locIdx, c)
+      const tOpt = optTime(locIdx, c, n)
 
       // The optimisation (this IS cycle c)
       out.push({
@@ -483,9 +487,9 @@ function generateMenuCycleLogs(opts: {
 
       // When the NEXT cycle runs, a report is generated about THIS cycle.
       // Place it just before the next optimisation so it references cycle c.
-      if (c < opts.cyclesPerLocation) {
+      if (c < n) {
         const rv = REPORT_VARIANTS[(locIdx + c) % REPORT_VARIANTS.length]
-        const tReport = new Date(optTime(locIdx, c + 1).getTime() - 3 * HOUR)
+        const tReport = new Date(optTime(locIdx, c + 1, n).getTime() - 3 * HOUR)
         out.push({
           id: `${opts.idPrefix}-${locIdx}-report-${c}`,
           agentId: opts.agentId,
@@ -510,6 +514,13 @@ function generateMenuCycleLogs(opts: {
   return out
 }
 
+// Every other Menu-agent location (beyond the 3 well-established ones) gets a
+// smaller cycle history: 1–3 cycles, alternating, so the overview "Optimization
+// cycles" column shows realistic counts for all locations.
+const EXTRA_MENU_LOCATIONS = (MOCK_AGENTS.find(a => a.id === 'agent-1')?.locations ?? [])
+  .map(l => l.name)
+  .filter(name => !MENU_LOCATIONS.includes(name))
+
 MOCK_LOGS.push(
   ...generateMenuCycleLogs({
     agentId: 'agent-1',
@@ -517,6 +528,14 @@ MOCK_LOGS.push(
     locations: MENU_LOCATIONS,
     cyclesPerLocation: 8,
     idPrefix: 'gen-menu',
+    latestCycleTimestamp: '2026-06-03T20:00:00Z',
+  }),
+  ...generateMenuCycleLogs({
+    agentId: 'agent-1',
+    agentName: 'Peak Hour Optimiser',
+    locations: EXTRA_MENU_LOCATIONS,
+    cyclesPerLocation: (i) => 1 + (i % 3), // alternating 1, 2, 3
+    idPrefix: 'gen-menu-x',
     latestCycleTimestamp: '2026-06-03T20:00:00Z',
   }),
   ...generateLogs({
