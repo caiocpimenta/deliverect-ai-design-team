@@ -32,7 +32,6 @@ import {
 } from '@deliverect/galaxy-react'
 import { Page } from '../components/Page'
 import { ActivityLog, ReportDrawerBody } from '../components/ActivityLog'
-import { CycleLog } from '../components/CycleLog'
 import { useAgents } from '../context/AgentsContext'
 import { type AgentPromo } from '../data/mockAgents'
 import { MOCK_LOGS } from '../data/mockLogs'
@@ -514,13 +513,13 @@ export function AgentDetailPage() {
                     <Table.Header>
                       <Table.Row sticky>
                         <Table.ColumnHeaderCell noHover>Location</Table.ColumnHeaderCell>
-                        <Table.ColumnHeaderCell noHover><ColHeader label="Added"                  tip="The date this location was enrolled in the agent." /></Table.ColumnHeaderCell>
+                        <Table.ColumnHeaderCell noHover><ColHeader label="Created time"           tip="The date this location was enrolled in the agent." /></Table.ColumnHeaderCell>
                         <Table.ColumnHeaderCell noHover><ColHeader label="Days active"            tip="Days this location was active within the selected period." /></Table.ColumnHeaderCell>
                         <Table.ColumnHeaderCell noHover><ColHeader label="Last Error"             tip="Date the most recent error for this location was detected." /></Table.ColumnHeaderCell>
                         <Table.ColumnHeaderCell noHover><ColHeader label="Protected Orders (5d)"  tip="Total orders across all PLUs in the 5 days after each fix, with no reported issues." /></Table.ColumnHeaderCell>
                         <Table.ColumnHeaderCell noHover><ColHeader label="Avg. Order Value"       tip="Average value of orders containing a fixed PLU after the fix was applied." /></Table.ColumnHeaderCell>
                         <Table.ColumnHeaderCell noHover><ColHeader label="Revenue Protected"      tip="Estimated revenue protected by correcting PLU errors at this location." /></Table.ColumnHeaderCell>
-                        <Table.ColumnHeaderCell noHover><ColHeader label="Total Fixes"            tip="Total number of fixes the agent has applied at this location in the selected period." /></Table.ColumnHeaderCell>
+                        <Table.ColumnHeaderCell noHover><ColHeader label="Orders resolved"        tip="Total number of orders the agent has resolved at this location in the selected period." /></Table.ColumnHeaderCell>
                         <Table.ColumnHeaderCell noHover width="1"><ColHeader label="Status"       tip="Whether this location is currently being monitored by the agent." /></Table.ColumnHeaderCell>
                         <Table.ColumnHeaderCell noHover width="1" />
                       </Table.Row>
@@ -616,15 +615,15 @@ export function AgentDetailPage() {
               <Table.Root width="full">
                 <Table.Header>
                   <Table.Row sticky>
-                    <Table.ColumnHeaderCell noHover>Location</Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell noHover><ColHeader label="Locations" tip="Metrics reflect location-level data. Multiple Autonomous Menu agents in the same location can share similar results." /></Table.ColumnHeaderCell>
                     <Table.ColumnHeaderCell noHover>Created time</Table.ColumnHeaderCell>
                     <Table.ColumnHeaderCell noHover>Last optimization</Table.ColumnHeaderCell>
                     <Table.ColumnHeaderCell noHover>Optimisation runs</Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell noHover>Total orders</Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell noHover>Total revenue</Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell noHover>Daily AOV</Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell noHover>Basket size</Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell noHover>Multi-product orders</Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell noHover><ColHeader label="Total orders" tip="Total orders received after the agent was set up, compared to the same number of days before." /></Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell noHover><ColHeader label="Total revenue" tip="Total revenue earned after the agent was set up, compared to the same number of days before." /></Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell noHover><ColHeader label="Daily AOV" tip="Average daily order value after the agent was set up, compared to the same number of days before." /></Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell noHover><ColHeader label="Basket size" tip="Average number of items in each order after the agent was set up, compared to the same number of days before." /></Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell noHover><ColHeader label="Multi-product orders" tip="Percentage of orders containing 3 or more distinct products after the agent was set up, compared to the same number of days before." /></Table.ColumnHeaderCell>
                     <Table.ColumnHeaderCell noHover width="1">Status</Table.ColumnHeaderCell>
                     <Table.ColumnHeaderCell noHover width="1" />
                   </Table.Row>
@@ -733,9 +732,7 @@ export function AgentDetailPage() {
         )}
 
         {activeTab === 'activity' && (
-          isMenuAgent
-            ? <CycleLog logs={agentLogs} />
-            : <ActivityLog logs={agentLogs} showPreviewColumn={false} showChips={false} showPrefix={false} compactTitle />
+          <ActivityLog logs={agentLogs} showPreviewColumn={false} showChips={false} showPrefix={false} compactTitle stickyToolbar />
         )}
 
         {activeTab === 'insights' && (

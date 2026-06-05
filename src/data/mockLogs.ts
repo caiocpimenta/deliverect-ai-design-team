@@ -174,7 +174,7 @@ export const MOCK_LOGS: AgentLog[] = [
     agentName: 'Order Accuracy Guard',
     agentType: 'ORDER_FIXER_AGENT',
     logType: 'optimisation',
-    action: 'Products synced',
+    action: 'Item sync',
     detail: 'Menu items synced across Uber Eats and Deliveroo after mismatch detected between POS and channel catalogue.',
     location: 'Liverpool St',
     timestamp: '2026-05-19T11:30:00Z',
@@ -188,7 +188,7 @@ export const MOCK_LOGS: AgentLog[] = [
     agentName: 'Order Accuracy Guard',
     agentType: 'ORDER_FIXER_AGENT',
     logType: 'optimisation',
-    action: 'Products snoozed',
+    action: 'Item snooze',
     detail: '3 out-of-stock items snoozed on Just Eat after repeated failed orders detected at this location.',
     location: 'Victoria',
     timestamp: '2026-05-19T09:15:00Z',
@@ -202,7 +202,7 @@ export const MOCK_LOGS: AgentLog[] = [
     agentName: 'Order Accuracy Guard',
     agentType: 'ORDER_FIXER_AGENT',
     logType: 'optimisation',
-    action: 'Menu published',
+    action: 'Publish menus',
     detail: 'Updated menu pushed live to Uber Eats and Deliveroo following a price correction on 4 items.',
     location: 'Canary Wharf',
     timestamp: '2026-05-18T22:05:00Z',
@@ -216,7 +216,7 @@ export const MOCK_LOGS: AgentLog[] = [
     agentName: 'Order Accuracy Guard',
     agentType: 'ORDER_FIXER_AGENT',
     logType: 'optimisation',
-    action: 'Products synced',
+    action: 'Item sync',
     detail: 'Modifier groups re-synced on Deliveroo after optional add-ons stopped appearing at checkout.',
     location: "King's Cross",
     timestamp: '2026-05-18T14:42:00Z',
@@ -230,11 +230,11 @@ export const MOCK_LOGS: AgentLog[] = [
     agentName: 'Order Accuracy Guard',
     agentType: 'ORDER_FIXER_AGENT',
     logType: 'optimisation',
-    action: 'Products snoozed',
+    action: 'Item snooze',
     detail: '"Pulled Pork Burger" and "Loaded Fries" snoozed on all channels — supplier delivery delayed.',
     location: 'Waterloo',
     timestamp: '2026-05-17T08:30:00Z',
-    status: 'info',
+    status: 'success',
     permissions: ['snooze_products'],
     reason: 'Kitchen reported stock unavailability — agent snoozed affected items to prevent customer disappointment.',
   },
@@ -244,7 +244,7 @@ export const MOCK_LOGS: AgentLog[] = [
     agentName: 'Order Accuracy Guard',
     agentType: 'ORDER_FIXER_AGENT',
     logType: 'optimisation',
-    action: 'Menu published',
+    action: 'Publish menus',
     detail: 'Seasonal menu update published to Uber Eats, Deliveroo, and Just Eat after approval.',
     location: 'Shoreditch',
     timestamp: '2026-05-16T20:00:00Z',
@@ -258,7 +258,7 @@ export const MOCK_LOGS: AgentLog[] = [
     agentName: 'Order Accuracy Guard',
     agentType: 'ORDER_FIXER_AGENT',
     logType: 'optimisation',
-    action: 'Products synced',
+    action: 'Item sync',
     detail: 'New breakfast items synced to Just Eat — items were live on POS but missing from the channel.',
     location: 'London Bridge',
     timestamp: '2026-05-15T07:55:00Z',
@@ -272,7 +272,7 @@ export const MOCK_LOGS: AgentLog[] = [
     agentName: 'Order Accuracy Guard',
     agentType: 'ORDER_FIXER_AGENT',
     logType: 'optimisation',
-    action: 'Products snoozed & menu published',
+    action: 'Item snooze',
     detail: '2 unavailable items snoozed and updated menu immediately re-published to Deliveroo.',
     location: 'Paddington',
     timestamp: '2026-05-14T13:20:00Z',
@@ -286,7 +286,7 @@ export const MOCK_LOGS: AgentLog[] = [
     agentName: 'Order Accuracy Guard',
     agentType: 'ORDER_FIXER_AGENT',
     logType: 'optimisation',
-    action: 'Products synced',
+    action: 'Item sync',
     detail: 'Image assets and descriptions re-synced on Uber Eats after a partial upload failure.',
     location: 'Bethnal Green',
     timestamp: '2026-05-13T16:10:00Z',
@@ -300,7 +300,7 @@ export const MOCK_LOGS: AgentLog[] = [
     agentName: 'Order Accuracy Guard',
     agentType: 'ORDER_FIXER_AGENT',
     logType: 'optimisation',
-    action: 'Menu published',
+    action: 'Publish menus',
     detail: 'Price increase for 7 items published to all channels following manager approval.',
     location: 'Hammersmith',
     timestamp: '2026-05-12T11:00:00Z',
@@ -342,11 +342,11 @@ export const MOCK_LOGS: AgentLog[] = [
     agentName: 'Order Accuracy Guard',
     agentType: 'ORDER_FIXER_AGENT',
     logType: 'optimisation',
-    action: 'Products snoozed',
+    action: 'Item snooze',
     detail: '"Vegan Wrap" snoozed on Uber Eats — item marked as out of stock by kitchen at opening.',
     location: 'Victoria',
     timestamp: '2026-05-11T08:47:00Z',
-    status: 'info',
+    status: 'success',
     permissions: ['snooze_products'],
     reason: 'Kitchen marked item as unavailable at start of service — agent snoozed it automatically to avoid failed orders.',
   },
@@ -360,7 +360,7 @@ export const MOCK_LOGS: AgentLog[] = [
     detail: '"Desserts" section repositioned for evening hours and descriptions updated with allergen info',
     location: 'Canary Wharf',
     timestamp: '2026-05-06T18:20:00Z',
-    status: 'info',
+    status: 'success',
     permissions: ['position', 'content'],
     reason: 'AOV stagnant for 11 days with no improvement. Order volume threshold met. 7-day cooldown has passed.',
   },
@@ -384,7 +384,7 @@ export const MOCK_LOGS: AgentLog[] = [
     agentName: 'Order Accuracy Guard',
     agentType: 'ORDER_FIXER_AGENT',
     logType: 'optimisation',
-    action: 'Products synced & menu published',
+    action: 'Item sync',
     detail: 'Full catalogue re-sync performed and updated menu published after a channel integration reset.',
     location: 'Liverpool St',
     timestamp: '2026-05-09T14:33:00Z',
@@ -421,3 +421,102 @@ export const MOCK_LOGS: AgentLog[] = [
     reason: 'Sales within ±8% of weekly average — flat threshold met. Agent created a time-limited offer and triggered email campaign to drive Friday evening traffic.',
   },
 ]
+
+// ─── Generated filler logs (pagination demo data) ───────────────────────────────
+
+type LogVariant = {
+  action: string
+  logType: LogType
+  status: AgentLog['status']
+  permissions: string[]
+  detail: string
+  reason: string
+  channels?: string[]
+  report?: ReportData
+}
+
+const MENU_LOCATIONS = ['London Bridge', 'Shoreditch', 'Canary Wharf']
+
+const SUPPORT_LOCATIONS = [
+  'Liverpool St', 'Victoria', 'Waterloo', "King's Cross", 'Paddington',
+  'London Bridge', 'Canary Wharf', 'Stratford', 'Shoreditch', 'Brixton',
+  'Camden', 'Hackney', 'Islington', 'Clapham', 'Peckham', 'Hammersmith',
+]
+
+const MENU_VARIANTS: LogVariant[] = [
+  { action: 'Menu optimised', logType: 'optimisation', status: 'success', permissions: ['position', 'content'], detail: 'High-margin items promoted to the top section and item descriptions refreshed for the dinner window.', reason: 'AOV stagnant for 8 days and order volume threshold met. 7-day cooldown has passed.' },
+  { action: 'Menu optimised', logType: 'optimisation', status: 'success', permissions: ['upsells', 'best_sellers'], detail: 'Upsell groups reordered and the best-sellers row refreshed to reflect the current top performers.', reason: 'Best-seller mix shifted week-over-week. Order volume threshold met. 7-day cooldown has passed.' },
+  { action: 'Menu published', logType: 'publication', status: 'success', permissions: [], detail: 'Optimised menu pushed live to all connected marketplaces after the overnight optimisation cycle.', reason: 'Automatic publication triggered immediately after the optimisation was applied.', channels: ['uber-eats', 'deliveroo', 'just-eat'] },
+  { action: 'Performance report', logType: 'report', status: 'info', permissions: [], detail: 'Inconclusive — baseline period established. 923 orders, £21,245.87 revenue, 93% multi-product rate.', reason: 'Report generated after the 7-day tracking window following the most recent optimisation.', report: SAMPLE_REPORT },
+  { action: 'Menu optimised', logType: 'optimisation', status: 'warning', permissions: ['meal_deals'], detail: 'Lunch meal deal rebuilt after the previous bundle underperformed on attach rate.', reason: 'Meal-deal attach rate dropped below target. Order volume threshold met. 7-day cooldown has passed.' },
+  { action: 'Menu optimised', logType: 'optimisation', status: 'success', permissions: ['position', 'upsells', 'content'], detail: 'Categories repositioned for the evening service and upsell prompts added to high-traffic items.', reason: 'AOV dropped 9% over the past 7 days. Sufficient order volume met. 7-day cooldown has passed.' },
+]
+
+const SUPPORT_VARIANTS: LogVariant[] = [
+  { action: 'Item sync', logType: 'optimisation', status: 'success', permissions: ['sync_products'], detail: 'Menu items re-synced across Uber Eats and Deliveroo after a mismatch between POS and channel catalogue.', reason: 'Product catalogue mismatch detected between POS and delivery channel.' },
+  { action: 'Item snooze', logType: 'optimisation', status: 'success', permissions: ['snooze_products'], detail: 'Out-of-stock items snoozed across all channels after repeated failed orders were detected.', reason: 'Items flagged as unavailable by the kitchen — snoozed to prevent further failed orders.' },
+  { action: 'Publish menus', logType: 'publication', status: 'success', permissions: ['publish_menu'], detail: 'Updated menu pushed live to all channels following a price correction on several items.', reason: 'Price correction applied — menu re-published to propagate changes to all channels.', channels: ['uber-eats', 'deliveroo', 'just-eat'] },
+  { action: 'Item sync', logType: 'optimisation', status: 'warning', permissions: ['sync_products'], detail: 'Modifier groups re-synced on Deliveroo after optional add-ons stopped appearing at checkout.', reason: 'Modifier group missing from the channel payload — re-sync triggered to restore checkout options.' },
+  { action: 'Item snooze', logType: 'optimisation', status: 'success', permissions: ['snooze_products', 'publish_menu'], detail: 'Unavailable items snoozed and the updated menu immediately re-published to the affected channels.', reason: 'Items flagged unavailable mid-service — snoozed and re-published to minimise order failures.' },
+  { action: 'Item sync', logType: 'optimisation', status: 'success', permissions: ['sync_products'], detail: 'New items synced to Just Eat — live on POS but missing from the channel catalogue.', reason: 'Menu expansion detected on POS — new items missing from the Just Eat catalogue.' },
+]
+
+function generateLogs(opts: {
+  agentId: string
+  agentName: string
+  agentType: AgentType
+  locations: string[]
+  variants: LogVariant[]
+  count: number
+  idPrefix: string
+  startTimestamp: string
+}): AgentLog[] {
+  const start = new Date(opts.startTimestamp)
+  const logs: AgentLog[] = []
+  for (let i = 0; i < opts.count; i++) {
+    const v = opts.variants[i % opts.variants.length]
+    const location = opts.locations[i % opts.locations.length]
+    const d = new Date(start)
+    d.setHours(d.getHours() - i * 17)
+    logs.push({
+      id: `${opts.idPrefix}-${i + 1}`,
+      agentId: opts.agentId,
+      agentName: opts.agentName,
+      agentType: opts.agentType,
+      logType: v.logType,
+      action: v.action,
+      detail: v.detail,
+      location,
+      timestamp: d.toISOString(),
+      status: v.status,
+      permissions: v.permissions,
+      reason: v.reason,
+      ...(v.channels ? { channels: v.channels } : {}),
+      ...(v.report ? { report: v.report } : {}),
+    })
+  }
+  return logs
+}
+
+MOCK_LOGS.push(
+  ...generateLogs({
+    agentId: 'agent-1',
+    agentName: 'Peak Hour Optimiser',
+    agentType: 'MENU_AGENT',
+    locations: MENU_LOCATIONS,
+    variants: MENU_VARIANTS,
+    count: 50,
+    idPrefix: 'gen-menu',
+    startTimestamp: '2026-05-04T20:00:00Z',
+  }),
+  ...generateLogs({
+    agentId: 'agent-2',
+    agentName: 'Order Accuracy Guard',
+    agentType: 'ORDER_FIXER_AGENT',
+    locations: SUPPORT_LOCATIONS,
+    variants: SUPPORT_VARIANTS,
+    count: 100,
+    idPrefix: 'gen-support',
+    startTimestamp: '2026-05-08T20:00:00Z',
+  }),
+)

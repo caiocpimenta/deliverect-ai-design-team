@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef, useEffect } from 'react'
 import {
   Badge,
   Button,
@@ -14,6 +14,7 @@ import {
   List,
   MegaphoneOutline,
   MenuFill,
+  Pagination,
   SearchOutline,
   SettingsOutline,
   Stack,
@@ -28,6 +29,13 @@ import { type AgentLog, type ReportData, PERMISSION_LABELS } from '../data/mockL
 function formatTimestamp(ts: string) {
   const d = new Date(ts)
   return d.toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+}
+
+function statusBadgeLabel(log: AgentLog) {
+  if (log.status === 'success') return 'Success'
+  if (log.status === 'warning') return 'Warning'
+  // Report log types surface as a "Report" badge instead of "Info"
+  return log.logType === 'report' ? 'Report' : 'Info'
 }
 
 function agentTypeLabel(type: AgentLog['agentType']) {
@@ -335,6 +343,7 @@ const AGENT_TYPE_OPTIONS = [
   { label: 'Promotions',         value: 'PROMOTION_AGENT'    },
 ]
 
+
 // ─── Main component ───────────────────────────────────────────────────────────
 
 interface Props {
@@ -346,18 +355,69 @@ interface Props {
   showPrefix?: boolean
   compactTitle?: boolean
   periodLabel?: string
+  stickyToolbar?: boolean
 }
 
-export function ActivityLog({ logs, showAgentColumn = false, showAgentTypeFilter = false, showChips = true, showPrefix = true, compactTitle = false, periodLabel }: Props) {
+export function ActivityLog({ logs, showAgentColumn = false, showAgentTypeFilter = false, showChips = true, showPrefix = true, compactTitle = false, periodLabel, stickyToolbar = false }: Props) {
   const [search, setSearch]                   = useState('')
   const [locationFilter, setLocationFilter]   = useState<string[]>([])
   const [statusFilter, setStatusFilter]       = useState<string[]>([])
   const [agentTypeFilter, setAgentTypeFilter] = useState<string[]>([])
+  const [activityTypeFilter, setActivityTypeFilter] = useState<string[]>([])
+  const [dateRange, setDateRange]             = useState<{ from: Date; to: Date } | null>(null)
   const [selectedLog, setSelectedLog]         = useState<AgentLog | null>(null)
+  const [page, setPage]                       = useState(1)
+  const PAGE_SIZE = 25
+
+  // Track scrolling of the nearest scroll container so the sticky toolbar
+  // only shows its bottom shadow once the user has scrolled (overflow cue).
+  const toolbarRef = useRef<HTMLDivElement>(null)
+  const [scrolled, setScrolled] = useState(false)
+  useEffect(() => {
+    if (!stickyToolbar) return
+    let node: HTMLElement | null = toolbarRef.current?.parentElement ?? null
+    while (node) {
+      const oy = getComputedStyle(node).overflowY
+      if ((oy === 'auto' || oy === 'scroll') && node.scrollHeight > node.clientHeight) break
+      node = node.parentElement
+    }
+    const scroller = node
+    if (!scroller) return
+    const onScroll = () => setScrolled(scroller.scrollTop > 0)
+    onScroll()
+    scroller.addEventListener('scroll', onScroll, { passive: true })
+    return () => scroller.removeEventListener('scroll', onScroll)
+  }, [stickyToolbar])
+
+  // Cycle number per Menu-agent optimisation, counted per location in
+  // chronological order (oldest = Cycle 1) so it's stable across filters/sort.
+  const cycleByLogId = useMemo(() => {
+    const map = new Map<string, number>()
+    const byLocation = new Map<string, AgentLog[]>()
+    logs.forEach(l => {
+      if (l.agentType === 'MENU_AGENT' && l.logType === 'optimisation') {
+        const arr = byLocation.get(l.location) ?? []
+        arr.push(l)
+        byLocation.set(l.location, arr)
+      }
+    })
+    byLocation.forEach(arr => {
+      arr
+        .slice()
+        .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
+        .forEach((l, i) => map.set(l.id, i + 1))
+    })
+    return map
+  }, [logs])
 
   const locationOptions = useMemo(() => {
     const unique = Array.from(new Set(logs.map(l => l.location)))
     return unique.map(loc => ({ label: loc, value: loc }))
+  }, [logs])
+
+  const activityTypeOptions = useMemo(() => {
+    const unique = Array.from(new Set(logs.map(l => l.action))).sort((a, b) => a.localeCompare(b))
+    return unique.map(action => ({ label: action, value: action }))
   }, [logs])
 
   const specificLocationCount = useMemo(() =>
@@ -378,16 +438,73 @@ export function ActivityLog({ logs, showAgentColumn = false, showAgentTypeFilter
       if (locationFilter.length > 0 && !locationFilter.includes(log.location)) return false
       if (statusFilter.length > 0 && !statusFilter.includes(log.status)) return false
       if (agentTypeFilter.length > 0 && !agentTypeFilter.includes(log.agentType)) return false
+      if (activityTypeFilter.length > 0 && !activityTypeFilter.includes(log.action)) return false
+      if (dateRange) {
+        const t = new Date(log.timestamp).getTime()
+        if (t < dateRange.from.getTime() || t > dateRange.to.getTime()) return false
+      }
       return true
     })
-  }, [logs, search, locationFilter, statusFilter, agentTypeFilter])
+  }, [logs, search, locationFilter, statusFilter, agentTypeFilter, activityTypeFilter, dateRange])
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+  const safePage = Math.min(page, totalPages)
+  const paged = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
+
+  const datePresets = useMemo(() => {
+    const now = new Date()
+    const daysAgo = (n: number) => {
+      const d = new Date(now)
+      d.setDate(d.getDate() - n)
+      d.setHours(0, 0, 0, 0)
+      return d
+    }
+    return [
+      { label: 'Last 7 days',  from: daysAgo(7),  to: now },
+      { label: 'Last 30 days', from: daysAgo(30), to: now },
+      { label: 'Last 90 days', from: daysAgo(90), to: now },
+    ]
+  }, [])
 
   const filterConfigMap = useMemo(() => ({
+    date: {
+      label: 'Date',
+      filter: (
+        <Filter.CalendarWithPresets
+          id="date"
+          tagLabel="Date"
+          applyLabel="Apply"
+          applyMode="deferred"
+          customOptionLabel="Custom range"
+          presets={datePresets}
+          mode="range"
+          selected={dateRange ?? undefined}
+          onValueApplyChange={(from, to) => { setDateRange({ from, to }); setPage(1) }}
+          onValueClear={() => { setDateRange(null); setPage(1) }}
+        />
+      ),
+    },
+    activityType: {
+      label: 'Activity type',
+      filter: (
+        <Filter.Select
+          id="activityType"
+          tagLabel="Activity type"
+          applyLabel="Apply"
+          multiple
+          value={activityTypeFilter}
+          options={activityTypeOptions}
+          optionsEmptyLabel="No activity types"
+          onValueApplyChange={(v) => { setActivityTypeFilter(v); setPage(1) }}
+          onValueClear={() => { setActivityTypeFilter([]); setPage(1) }}
+        />
+      ),
+    },
     location: {
       label: 'Location',
       filter: (
         <Filter.Select
-          id="location-filter"
+          id="location"
           tagLabel="Location"
           applyLabel="Apply"
           multiple
@@ -396,8 +513,8 @@ export function ActivityLog({ logs, showAgentColumn = false, showAgentTypeFilter
           optionsEmptyLabel="No locations found"
           searchable
           searchPlaceholder="Search locations…"
-          onValueApplyChange={setLocationFilter}
-          onValueClear={() => setLocationFilter([])}
+          onValueApplyChange={(v) => { setLocationFilter(v); setPage(1) }}
+          onValueClear={() => { setLocationFilter([]); setPage(1) }}
         />
       ),
     },
@@ -405,15 +522,15 @@ export function ActivityLog({ logs, showAgentColumn = false, showAgentTypeFilter
       label: 'Status',
       filter: (
         <Filter.Select
-          id="status-filter"
+          id="status"
           tagLabel="Status"
           applyLabel="Apply"
           multiple
           value={statusFilter}
           options={STATUS_OPTIONS}
           optionsEmptyLabel="No statuses"
-          onValueApplyChange={setStatusFilter}
-          onValueClear={() => setStatusFilter([])}
+          onValueApplyChange={(v) => { setStatusFilter(v); setPage(1) }}
+          onValueClear={() => { setStatusFilter([]); setPage(1) }}
         />
       ),
     },
@@ -422,45 +539,71 @@ export function ActivityLog({ logs, showAgentColumn = false, showAgentTypeFilter
         label: 'Agent type',
         filter: (
           <Filter.Select
-            id="agent-type-filter"
+            id="agentType"
             tagLabel="Agent type"
             applyLabel="Apply"
             multiple
             value={agentTypeFilter}
             options={AGENT_TYPE_OPTIONS}
             optionsEmptyLabel="No types"
-            onValueApplyChange={setAgentTypeFilter}
-            onValueClear={() => setAgentTypeFilter([])}
+            onValueApplyChange={(v) => { setAgentTypeFilter(v); setPage(1) }}
+            onValueClear={() => { setAgentTypeFilter([]); setPage(1) }}
           />
         ),
       },
     }),
-  }), [locationFilter, locationOptions, statusFilter, agentTypeFilter, showAgentTypeFilter])
+  }), [locationFilter, locationOptions, statusFilter, agentTypeFilter, showAgentTypeFilter, activityTypeFilter, activityTypeOptions, dateRange, datePresets])
 
   return (
     <>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: vars.spacing['200'] }}>
-        {/* Toolbar */}
-        <Inline space="150" alignY="center">
-          <div style={{ flex: 1, maxWidth: 320 }}>
-            <Input.Group>
-              <Input.LeftAddon style={{ paddingLeft: vars.spacing['150'], paddingRight: vars.spacing['075'], display: 'flex', alignItems: 'center', color: vars.colors.icon.neutral.default.default }}>
-                <SearchOutline size="sm" />
-              </Input.LeftAddon>
-              <Input.Field
-                placeholder="Search activity…"
-                value={search}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
-              />
-            </Input.Group>
-          </div>
-          <Filter.Menu label="Filter" filterConfigMap={filterConfigMap} />
-          {periodLabel && (
-            <InputChip Icon={<CalendarOutline size="sm" />}>
-              {periodLabel}
-            </InputChip>
-          )}
-        </Inline>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: stickyToolbar ? 0 : vars.spacing['200'] }}>
+        {/* Toolbar — optionally pinned to the top of the scroll area */}
+        <div
+          ref={toolbarRef}
+          style={
+            stickyToolbar
+              ? {
+                  position: 'sticky',
+                  // top offset cancels Page.Body's top padding (spacing 250) so the bar
+                  // pins flush to the very top of the scroll area and covers that padding
+                  // band — otherwise list rows show through the gap above the bar.
+                  top: `calc(-1 * ${vars.spacing['250']})`,
+                  zIndex: 2,
+                  backgroundColor: vars.colors.background.default,
+                  marginTop: `calc(-1 * ${vars.spacing['250']})`,
+                  paddingTop: vars.spacing['150'],
+                  paddingBottom: vars.spacing['150'],
+                  marginInline: `calc(-1 * ${vars.spacing['300']})`,
+                  paddingInline: vars.spacing['300'],
+                  // soft shadow on the bottom edge — only once scrolled — so it's
+                  // clear list rows scroll underneath the pinned bar (overflow cue)
+                  boxShadow: scrolled ? '0 6px 6px -6px rgba(16, 24, 40, 0.18)' : 'none',
+                  transition: 'box-shadow 0.15s ease',
+                }
+              : undefined
+          }
+        >
+          <Inline space="150" alignY="center">
+            <div style={{ flex: 1, maxWidth: 320 }}>
+              <Input.Group>
+                <Input.LeftAddon style={{ paddingLeft: vars.spacing['150'], paddingRight: vars.spacing['075'], display: 'flex', alignItems: 'center', color: vars.colors.icon.neutral.default.default }}>
+                  <SearchOutline size="sm" />
+                </Input.LeftAddon>
+                <Input.Field
+                  placeholder="Search activity…"
+                  value={search}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setSearch(e.target.value); setPage(1) }}
+                />
+              </Input.Group>
+            </div>
+            <Filter.Menu label="Filter" filterConfigMap={filterConfigMap} />
+            {periodLabel && (
+              <InputChip Icon={<CalendarOutline size="sm" />}>
+                {periodLabel}
+              </InputChip>
+            )}
+          </Inline>
+        </div>
 
         {/* List */}
         {filtered.length === 0 ? (
@@ -469,12 +612,12 @@ export function ActivityLog({ logs, showAgentColumn = false, showAgentTypeFilter
           </div>
         ) : (
           <Stack space="100">
-            {filtered.map(log => (
+            {paged.map(log => (
               <List.Root
                 key={log.id}
                 type="card"
                 onClick={() => setSelectedLog(log)}
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: 'pointer', paddingBlock: vars.spacing['200'], paddingInline: vars.spacing['200'] }}
               >
                 {showPrefix && (
                   <List.Prefix>
@@ -484,13 +627,17 @@ export function ActivityLog({ logs, showAgentColumn = false, showAgentTypeFilter
 
                 <List.Title>
                   <Stack space={compactTitle ? 'none' : '075'} height="auto">
-                    <Text size="sm" weight="medium">
+                    <Text size="sm" weight="medium" style={compactTitle ? { lineHeight: 1.3 } : undefined}>
                       {showAgentColumn ? log.agentName : log.action}
                     </Text>
-                    <Text size="sm" color="secondary">
-                      {showAgentColumn
-                        ? `${log.action} · ${toLocationLabel(log.location)}`
-                        : toLocationLabel(log.location)}
+                    <Text size="sm" color="secondary" style={compactTitle ? { lineHeight: 1.3 } : undefined}>
+                      {(() => {
+                        const base = showAgentColumn
+                          ? `${log.action} · ${toLocationLabel(log.location)}`
+                          : toLocationLabel(log.location)
+                        const cycle = cycleByLogId.get(log.id)
+                        return cycle ? `${base} · Cycle ${cycle}` : base
+                      })()}
                     </Text>
                     {showChips && <LogChips log={log} />}
                   </Stack>
@@ -498,31 +645,51 @@ export function ActivityLog({ logs, showAgentColumn = false, showAgentTypeFilter
 
                 <List.Suffix alignY="center">
                   <Inline space="150" alignY="center">
-                    {log.logType === 'optimisation' && (
-                      <Button
-                        variant="transparent"
-                        size="sm"
-                        Icon={<EyeOpenFill size="md" />}
-                        aria-label="Preview change"
-                        onClick={e => { e.stopPropagation(); setSelectedLog(log) }}
-                      />
-                    )}
-                    <div style={{ width: 64, display: 'flex', justifyContent: 'center' }}>
+                    <div style={{ width: 32, display: 'flex', justifyContent: 'flex-end', flexShrink: 0 }}>
+                      {log.logType === 'optimisation' && (
+                        <Button
+                          variant="transparent"
+                          size="sm"
+                          Icon={<EyeOpenFill size="md" />}
+                          aria-label="Preview change"
+                          onClick={e => { e.stopPropagation(); setSelectedLog(log) }}
+                        />
+                      )}
+                    </div>
+                    <div style={{ width: 72, display: 'flex', justifyContent: 'flex-end', flexShrink: 0 }}>
                       <Badge
                         size="sm"
                         status={log.status === 'success' ? 'success' : log.status === 'warning' ? 'warning' : 'info'}
                       >
-                        {log.status === 'success' ? 'Success' : log.status === 'warning' ? 'Warning' : 'Info'}
+                        {statusBadgeLabel(log)}
                       </Badge>
                     </div>
-                    <Text size="sm" color="secondary" style={{ whiteSpace: 'nowrap' }}>
-                      {formatTimestamp(log.timestamp)}
-                    </Text>
+                    <div style={{ width: 150, display: 'flex', justifyContent: 'flex-end', flexShrink: 0 }}>
+                      <Text size="sm" color="secondary" style={{ whiteSpace: 'nowrap' }}>
+                        {formatTimestamp(log.timestamp)}
+                      </Text>
+                    </div>
                   </Inline>
                 </List.Suffix>
               </List.Root>
             ))}
           </Stack>
+        )}
+
+        {filtered.length > 0 && (
+          <Inline
+            alignX="right"
+            width="full"
+            style={stickyToolbar ? { paddingTop: vars.spacing['200'] } : undefined}
+          >
+            <Pagination
+              total={filtered.length}
+              page={safePage}
+              pageSize={PAGE_SIZE}
+              subject="events"
+              onPageChange={setPage}
+            />
+          </Inline>
         )}
       </div>
 
@@ -543,7 +710,7 @@ export function ActivityLog({ logs, showAgentColumn = false, showAgentTypeFilter
                       size="sm"
                       status={selectedLog.status === 'success' ? 'success' : selectedLog.status === 'warning' ? 'warning' : 'info'}
                     >
-                      {selectedLog.status === 'success' ? 'Success' : selectedLog.status === 'warning' ? 'Warning' : 'Info'}
+                      {statusBadgeLabel(selectedLog)}
                     </Badge>
                   )}
                 </Inline>
