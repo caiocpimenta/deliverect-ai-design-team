@@ -3,18 +3,22 @@ import {
   Badge,
   Button,
   CalendarOutline,
+  CategoryOutline,
   Drawer,
   EyeOpenFill,
   Filter,
+  FlagOutline,
   GraphBarFill,
   Heading,
   Input,
   InputChip,
   Inline,
+  LabelOutline,
   List,
   MegaphoneOutline,
   MenuFill,
   Pagination,
+  PinOutline,
   SearchOutline,
   SettingsOutline,
   Stack,
@@ -389,23 +393,40 @@ export function ActivityLog({ logs, showAgentColumn = false, showAgentTypeFilter
     return () => scroller.removeEventListener('scroll', onScroll)
   }, [stickyToolbar])
 
-  // Cycle number per Menu-agent optimisation, counted per location in
-  // chronological order (oldest = Cycle 1) so it's stable across filters/sort.
+  // Cycle reference per Menu-agent log, counted per location in chronological
+  // order (oldest optimisation = Cycle 1) so it's stable across filters/sort.
+  //  - An optimisation IS a cycle → it shows its own cycle number.
+  //  - A publication belongs to the cycle it published → the current cycle.
+  //  - A report is ABOUT a cycle → it references the most recent optimisation
+  //    cycle at that location at or before the report (the previous cycle's
+  //    performance, whether the report was auto-generated or user-requested).
   const cycleByLogId = useMemo(() => {
     const map = new Map<string, number>()
     const byLocation = new Map<string, AgentLog[]>()
     logs.forEach(l => {
-      if (l.agentType === 'MENU_AGENT' && l.logType === 'optimisation') {
+      if (
+        l.agentType === 'MENU_AGENT' &&
+        (l.logType === 'optimisation' || l.logType === 'publication' || l.logType === 'report')
+      ) {
         const arr = byLocation.get(l.location) ?? []
         arr.push(l)
         byLocation.set(l.location, arr)
       }
     })
     byLocation.forEach(arr => {
+      let cycle = 0
       arr
         .slice()
         .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
-        .forEach((l, i) => map.set(l.id, i + 1))
+        .forEach(l => {
+          if (l.logType === 'optimisation') {
+            cycle += 1
+            map.set(l.id, cycle)
+          } else if (cycle > 0) {
+            // publication/report reference the latest completed cycle so far
+            map.set(l.id, cycle)
+          }
+        })
     })
     return map
   }, [logs])
@@ -466,13 +487,38 @@ export function ActivityLog({ logs, showAgentColumn = false, showAgentTypeFilter
     ]
   }, [])
 
+  // Tag label that reflects the current selection: the single option's label
+  // when one is selected, "N <noun>" when several, or the fallback when none.
+  const optLabel = (options: { label: string; value: string }[], value: string) =>
+    options.find(o => o.value === value)?.label ?? value
+  const selectionTag = (
+    selected: string[],
+    options: { label: string; value: string }[],
+    fallback: string,
+    plural: string,
+  ) =>
+    selected.length === 0
+      ? fallback
+      : selected.length === 1
+        ? optLabel(options, selected[0])
+        : `${selected.length} ${plural}`
+
+  const dateTagLabel = (() => {
+    if (!dateRange) return 'Date'
+    const fmt = (d: Date) => d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })
+    const from = fmt(dateRange.from)
+    const to = fmt(dateRange.to)
+    return from === to ? from : `${from} – ${to}`
+  })()
+
   const filterConfigMap = useMemo(() => ({
     date: {
       label: 'Date',
       filter: (
         <Filter.CalendarWithPresets
           id="date"
-          tagLabel="Date"
+          icon={<CalendarOutline size="sm" />}
+          tagLabel={dateTagLabel}
           applyLabel="Apply"
           applyMode="deferred"
           customOptionLabel="Custom range"
@@ -489,7 +535,8 @@ export function ActivityLog({ logs, showAgentColumn = false, showAgentTypeFilter
       filter: (
         <Filter.Select
           id="activityType"
-          tagLabel="Activity type"
+          icon={<CategoryOutline size="sm" />}
+          tagLabel={selectionTag(activityTypeFilter, activityTypeOptions, 'Activity type', 'activity types')}
           applyLabel="Apply"
           multiple
           value={activityTypeFilter}
@@ -505,7 +552,8 @@ export function ActivityLog({ logs, showAgentColumn = false, showAgentTypeFilter
       filter: (
         <Filter.Select
           id="location"
-          tagLabel="Location"
+          icon={<PinOutline size="sm" />}
+          tagLabel={selectionTag(locationFilter, locationOptions, 'Location', 'locations')}
           applyLabel="Apply"
           multiple
           value={locationFilter}
@@ -523,7 +571,8 @@ export function ActivityLog({ logs, showAgentColumn = false, showAgentTypeFilter
       filter: (
         <Filter.Select
           id="status"
-          tagLabel="Status"
+          icon={<FlagOutline size="sm" />}
+          tagLabel={selectionTag(statusFilter, STATUS_OPTIONS, 'Status', 'statuses')}
           applyLabel="Apply"
           multiple
           value={statusFilter}
@@ -540,7 +589,8 @@ export function ActivityLog({ logs, showAgentColumn = false, showAgentTypeFilter
         filter: (
           <Filter.Select
             id="agentType"
-            tagLabel="Agent type"
+            icon={<LabelOutline size="sm" />}
+            tagLabel={selectionTag(agentTypeFilter, AGENT_TYPE_OPTIONS, 'Agent type', 'agent types')}
             applyLabel="Apply"
             multiple
             value={agentTypeFilter}
@@ -552,7 +602,7 @@ export function ActivityLog({ logs, showAgentColumn = false, showAgentTypeFilter
         ),
       },
     }),
-  }), [locationFilter, locationOptions, statusFilter, agentTypeFilter, showAgentTypeFilter, activityTypeFilter, activityTypeOptions, dateRange, datePresets])
+  }), [locationFilter, locationOptions, statusFilter, agentTypeFilter, showAgentTypeFilter, activityTypeFilter, activityTypeOptions, dateRange, datePresets, dateTagLabel])
 
   return (
     <>

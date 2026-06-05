@@ -125,50 +125,6 @@ const SAMPLE_REPORT: ReportData = {
 
 export const MOCK_LOGS: AgentLog[] = [
   {
-    id: 'log-report-1',
-    agentId: 'agent-1',
-    agentName: 'Peak Hour Optimiser',
-    agentType: 'MENU_AGENT',
-    logType: 'report',
-    action: 'Performance report',
-    detail: 'Inconclusive — baseline period established. 923 orders, £21,245.87 revenue, 93% multi-product rate.',
-    location: 'London Bridge',
-    timestamp: '2026-05-15T09:00:00Z',
-    status: 'info',
-    permissions: [],
-    reason: 'Report generated after 7-day tracking window following the 8 May optimisation.',
-    report: SAMPLE_REPORT,
-  },
-  {
-    id: 'log-pub-1',
-    agentId: 'agent-1',
-    agentName: 'Peak Hour Optimiser',
-    agentType: 'MENU_AGENT',
-    logType: 'publication',
-    action: 'Menu published',
-    detail: 'Optimised menu pushed live to all connected marketplaces following overnight optimisation.',
-    location: 'London Bridge',
-    timestamp: '2026-05-08T00:04:00Z',
-    status: 'success',
-    permissions: [],
-    reason: 'Automatic publication triggered immediately after optimisation was applied at midnight.',
-    channels: ['uber-eats', 'deliveroo', 'just-eat'],
-  },
-  {
-    id: 'log-1',
-    agentId: 'agent-1',
-    agentName: 'Peak Hour Optimiser',
-    agentType: 'MENU_AGENT',
-    logType: 'optimisation',
-    action: 'Menu optimised',
-    detail: 'High-margin items promoted to top section, combo updated, and item descriptions refreshed for lunch window',
-    location: 'London Bridge',
-    timestamp: '2026-05-08T00:01:00Z',
-    status: 'success',
-    permissions: ['position', 'meal_deals', 'content'],
-    reason: 'AOV has been stagnant for 9 days and order volume threshold was met. 7-day cooldown since last optimisation has passed.',
-  },
-  {
     id: 'log-2',
     agentId: 'agent-2',
     agentName: 'Order Accuracy Guard',
@@ -323,20 +279,6 @@ export const MOCK_LOGS: AgentLog[] = [
     reason: 'Sales dropped 22% below weekly average across Uber Eats and Deliveroo — underperforming threshold of 20% exceeded.',
   },
   {
-    id: 'log-4',
-    agentId: 'agent-1',
-    agentName: 'Peak Hour Optimiser',
-    agentType: 'MENU_AGENT',
-    logType: 'optimisation',
-    action: 'Menu optimised',
-    detail: 'Upsell items repositioned and best sellers category refreshed to reflect current top performers',
-    location: 'Shoreditch',
-    timestamp: '2026-05-07T09:14:00Z',
-    status: 'success',
-    permissions: ['position', 'upsells', 'best_sellers'],
-    reason: 'AOV dropped 8% over the past 7 days. Sufficient order volume met. 7-day cooldown since last optimisation has passed.',
-  },
-  {
     id: 'log-5',
     agentId: 'agent-2',
     agentName: 'Order Accuracy Guard',
@@ -349,20 +291,6 @@ export const MOCK_LOGS: AgentLog[] = [
     status: 'success',
     permissions: ['snooze_products'],
     reason: 'Kitchen marked item as unavailable at start of service — agent snoozed it automatically to avoid failed orders.',
-  },
-  {
-    id: 'log-6',
-    agentId: 'agent-1',
-    agentName: 'Peak Hour Optimiser',
-    agentType: 'MENU_AGENT',
-    logType: 'optimisation',
-    action: 'Menu optimised',
-    detail: '"Desserts" section repositioned for evening hours and descriptions updated with allergen info',
-    location: 'Canary Wharf',
-    timestamp: '2026-05-06T18:20:00Z',
-    status: 'success',
-    permissions: ['position', 'content'],
-    reason: 'AOV stagnant for 11 days with no improvement. Order volume threshold met. 7-day cooldown has passed.',
   },
   {
     id: 'log-7',
@@ -391,20 +319,6 @@ export const MOCK_LOGS: AgentLog[] = [
     status: 'success',
     permissions: ['sync_products', 'publish_menu'],
     reason: 'Channel integration reset detected — full re-sync and republish triggered to restore correct menu state.',
-  },
-  {
-    id: 'log-9',
-    agentId: 'agent-1',
-    agentName: 'Peak Hour Optimiser',
-    agentType: 'MENU_AGENT',
-    logType: 'optimisation',
-    action: 'Menu optimised',
-    detail: 'Meal deal created for lunch window and upsell suggestions added to high-traffic items',
-    location: 'London Bridge',
-    timestamp: '2026-05-06T11:00:00Z',
-    status: 'success',
-    permissions: ['meal_deals', 'upsells'],
-    reason: 'AOV dropped 11% over 8 days. Order volume threshold met. 7-day cooldown has passed.',
   },
   {
     id: 'log-10',
@@ -498,16 +412,112 @@ function generateLogs(opts: {
   return logs
 }
 
+// Menu reporting model: every new optimisation cycle auto-generates a report on
+// the PREVIOUS cycle's performance. We emit, per location, optimisation → menu
+// published → (at the next cycle) a report about the cycle that just finished.
+// The report is timestamped just before the next optimisation so the activity
+// log's per-location cycle counter resolves it to the correct prior cycle.
+const MENU_OPT_VARIANTS = MENU_VARIANTS.filter(v => v.logType === 'optimisation')
+
+const REPORT_VARIANTS: { status: AgentLog['status']; detail: string }[] = [
+  { status: 'info', detail: 'Positive — AOV up 6% and multi-product rate up 4 pts versus the previous window.' },
+  { status: 'info', detail: 'Inconclusive — results within normal variance; no significant change against control.' },
+  { status: 'info', detail: 'Positive — basket size up 0.4 items and revenue up 5% on the optimised categories.' },
+  { status: 'info', detail: 'Negative — AOV dipped 2% against control; the lunch bundle is reverted next cycle.' },
+]
+
+function generateMenuCycleLogs(opts: {
+  agentId: string
+  agentName: string
+  locations: string[]
+  cyclesPerLocation: number
+  idPrefix: string
+  latestCycleTimestamp: string
+}): AgentLog[] {
+  const out: AgentLog[] = []
+  const DAY = 24 * 60 * 60 * 1000
+  const HOUR = 60 * 60 * 1000
+  const latest = new Date(opts.latestCycleTimestamp).getTime()
+
+  // Optimisation time for cycle c (1 = oldest, N = most recent), staggered per location.
+  const optTime = (locIdx: number, c: number) =>
+    new Date(latest - (opts.cyclesPerLocation - c) * 7 * DAY - locIdx * DAY)
+
+  opts.locations.forEach((location, locIdx) => {
+    for (let c = 1; c <= opts.cyclesPerLocation; c++) {
+      const ov = MENU_OPT_VARIANTS[(locIdx + c) % MENU_OPT_VARIANTS.length]
+      const tOpt = optTime(locIdx, c)
+
+      // The optimisation (this IS cycle c)
+      out.push({
+        id: `${opts.idPrefix}-${locIdx}-opt-${c}`,
+        agentId: opts.agentId,
+        agentName: opts.agentName,
+        agentType: 'MENU_AGENT',
+        logType: 'optimisation',
+        action: 'Menu optimised',
+        detail: ov.detail,
+        location,
+        timestamp: tOpt.toISOString(),
+        status: ov.status,
+        permissions: ov.permissions,
+        reason: ov.reason,
+      })
+
+      // Auto-publish right after the optimisation
+      out.push({
+        id: `${opts.idPrefix}-${locIdx}-pub-${c}`,
+        agentId: opts.agentId,
+        agentName: opts.agentName,
+        agentType: 'MENU_AGENT',
+        logType: 'publication',
+        action: 'Menu published',
+        detail: 'Optimised menu pushed live to all connected marketplaces after the optimisation cycle.',
+        location,
+        timestamp: new Date(tOpt.getTime() + HOUR).toISOString(),
+        status: 'success',
+        permissions: [],
+        reason: 'Automatic publication triggered immediately after the optimisation was applied.',
+        channels: ['uber-eats', 'deliveroo', 'just-eat'],
+      })
+
+      // When the NEXT cycle runs, a report is generated about THIS cycle.
+      // Place it just before the next optimisation so it references cycle c.
+      if (c < opts.cyclesPerLocation) {
+        const rv = REPORT_VARIANTS[(locIdx + c) % REPORT_VARIANTS.length]
+        const tReport = new Date(optTime(locIdx, c + 1).getTime() - 3 * HOUR)
+        out.push({
+          id: `${opts.idPrefix}-${locIdx}-report-${c}`,
+          agentId: opts.agentId,
+          agentName: opts.agentName,
+          agentType: 'MENU_AGENT',
+          logType: 'report',
+          action: 'Performance report',
+          detail: rv.detail,
+          location,
+          timestamp: tReport.toISOString(),
+          status: rv.status,
+          permissions: [],
+          reason: 'Generated automatically at the start of a new cycle — reports on the previous cycle’s tracked performance.',
+          report: SAMPLE_REPORT,
+        })
+      }
+    }
+  })
+
+  // newest first
+  out.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+  return out
+}
+
 MOCK_LOGS.push(
-  ...generateLogs({
+  ...generateMenuCycleLogs({
     agentId: 'agent-1',
     agentName: 'Peak Hour Optimiser',
-    agentType: 'MENU_AGENT',
     locations: MENU_LOCATIONS,
-    variants: MENU_VARIANTS,
-    count: 50,
+    cyclesPerLocation: 8,
     idPrefix: 'gen-menu',
-    startTimestamp: '2026-05-04T20:00:00Z',
+    latestCycleTimestamp: '2026-06-03T20:00:00Z',
   }),
   ...generateLogs({
     agentId: 'agent-2',

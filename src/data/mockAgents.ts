@@ -125,6 +125,52 @@ export const MOCK_AGENTS: Agent[] = [
   },
 ]
 
+// ── Bulk Menu-agent locations (overview table demo data) ───────────────────────
+const MENU_EXTRA_LOCATION_NAMES = [
+  'Angel', 'Archway', 'Highbury', 'Finsbury Park', 'Crouch End', 'Muswell Hill',
+  'Highgate', 'Tufnell Park', 'Kentish Town', 'Chalk Farm', 'Belsize Park',
+  'Hampstead', 'Swiss Cottage', 'Kilburn', 'Maida Vale', 'Notting Hill',
+  'Bayswater', 'Ladbroke Grove', "Shepherd's Bush", 'White City', 'Acton',
+  'Ealing', 'Chiswick', 'Brentford', 'Richmond', 'Kew', 'Barnes', 'Earlsfield',
+  'Wimbledon', 'Colliers Wood', 'Morden', 'Mitcham', 'Streatham', 'Tulse Hill',
+  'Herne Hill', 'Dulwich', 'Forest Hill', 'Sydenham', 'Catford', 'Deptford',
+  'New Cross', 'Surrey Quays', 'Rotherhithe', 'Canada Water', 'Limehouse',
+  'Poplar', 'Canning Town', 'West Ham', 'Plaistow', 'Upton Park', 'East Ham',
+  'Barking', 'Ilford', 'Walthamstow', 'Leyton', 'Leytonstone', 'Wanstead',
+  'Woodford', 'Chingford', 'Tottenham', 'Seven Sisters', 'Wood Green',
+  'Bounds Green', 'Palmers Green', 'Southgate', 'Enfield', 'Edmonton', 'Finchley',
+  'Golders Green', 'Hendon', 'Colindale', 'Edgware', 'Stanmore', 'Harrow',
+  'Wembley', 'Willesden', 'Cricklewood',
+]
+
+const MENU_LOCATION_ADDED_DATES = ['2026-02-12', '2026-03-18', '2026-04-22', '2026-05-14', '2026-06-02']
+const MENU_CYCLE_STATUSES: AgentLocation['cycleStatus'][] = ['optimising', 'scheduled', 'idle']
+
+function makeMenuLocations(names: string[], startId: number): AgentLocation[] {
+  return names.map((name, i) => {
+    const totalOrders = 300 + ((i * 37) % 900)
+    const avgAov = Math.round((19 + ((i * 7) % 60) / 10) * 10) / 10
+    return {
+      id: `loc-m${startId + i}`,
+      name,
+      addedAt: MENU_LOCATION_ADDED_DATES[i % MENU_LOCATION_ADDED_DATES.length],
+      cycleStatus: MENU_CYCLE_STATUSES[i % MENU_CYCLE_STATUSES.length],
+      totalOrders,
+      totalRevenue: Math.round(totalOrders * avgAov),
+      avgAov,
+      multiProductPct: 35 + ((i * 13) % 30),
+      status: i % 11 === 0 ? 'inactive' : 'active',
+    }
+  })
+}
+
+// Grow the Autonomous Menu agent's location list to 80 for the overview table.
+const menuAgent = MOCK_AGENTS.find(a => a.id === 'agent-1')
+if (menuAgent) {
+  const needed = 80 - menuAgent.locations.length
+  menuAgent.locations.push(...makeMenuLocations(MENU_EXTRA_LOCATION_NAMES.slice(0, needed), 1))
+}
+
 export const MOCK_LOCATIONS = [
   { id: 'loc-1', name: 'London Bridge' },
   { id: 'loc-2', name: 'Shoreditch' },

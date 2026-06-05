@@ -509,24 +509,22 @@ export function AgentDetailPage() {
                   </Inline>
 
                   {/* Location table */}
-                  <Table.Root width="full">
+                  <Table.Root width="full" className="support-locations-table">
                     <Table.Header>
                       <Table.Row sticky>
                         <Table.ColumnHeaderCell noHover>Location</Table.ColumnHeaderCell>
                         <Table.ColumnHeaderCell noHover><ColHeader label="Created time"           tip="The date this location was enrolled in the agent." /></Table.ColumnHeaderCell>
-                        <Table.ColumnHeaderCell noHover><ColHeader label="Days active"            tip="Days this location was active within the selected period." /></Table.ColumnHeaderCell>
                         <Table.ColumnHeaderCell noHover><ColHeader label="Last Error"             tip="Date the most recent error for this location was detected." /></Table.ColumnHeaderCell>
                         <Table.ColumnHeaderCell noHover><ColHeader label="Protected Orders (5d)"  tip="Total orders across all PLUs in the 5 days after each fix, with no reported issues." /></Table.ColumnHeaderCell>
                         <Table.ColumnHeaderCell noHover><ColHeader label="Avg. Order Value"       tip="Average value of orders containing a fixed PLU after the fix was applied." /></Table.ColumnHeaderCell>
                         <Table.ColumnHeaderCell noHover><ColHeader label="Revenue Protected"      tip="Estimated revenue protected by correcting PLU errors at this location." /></Table.ColumnHeaderCell>
                         <Table.ColumnHeaderCell noHover><ColHeader label="Orders resolved"        tip="Total number of orders the agent has resolved at this location in the selected period." /></Table.ColumnHeaderCell>
-                        <Table.ColumnHeaderCell noHover width="1"><ColHeader label="Status"       tip="Whether this location is currently being monitored by the agent." /></Table.ColumnHeaderCell>
-                        <Table.ColumnHeaderCell noHover width="1" />
+                        <Table.ColumnHeaderCell noHover><ColHeader label="Status"       tip="Whether this location is currently being monitored by the agent." /></Table.ColumnHeaderCell>
+                        <Table.ColumnHeaderCell noHover />
                       </Table.Row>
                     </Table.Header>
                     <Table.Body>
                       {pagedLocations.map(loc => {
-                        const daysActive = getDaysActive(loc.addedAt, interval)
                         const locRecords = MOCK_FIX_RECORDS.filter(r =>
                           r.agentId === agent.id &&
                           r.location === loc.name &&
@@ -549,11 +547,6 @@ export function AgentDetailPage() {
                             <Table.Cell>
                               <Text size="sm" color="secondary">
                                 {new Date(loc.addedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-                              </Text>
-                            </Table.Cell>
-                            <Table.Cell>
-                              <Text size="sm" color={daysActive < interval.daysInInterval ? 'secondary' : undefined}>
-                                {daysActive} / {interval.daysInInterval}
                               </Text>
                             </Table.Cell>
                             <Table.Cell>
@@ -612,7 +605,7 @@ export function AgentDetailPage() {
             ) : isMenuAgent && agent.locations.length > 0 ? (
               // ── Menu Agent: location performance ──────────────────────────
               <>
-              <Table.Root width="full">
+              <Table.Root width="full" className="menu-locations-table">
                 <Table.Header>
                   <Table.Row sticky>
                     <Table.ColumnHeaderCell noHover><ColHeader label="Locations" tip="Metrics reflect location-level data. Multiple Autonomous Menu agents in the same location can share similar results." /></Table.ColumnHeaderCell>
@@ -624,8 +617,8 @@ export function AgentDetailPage() {
                     <Table.ColumnHeaderCell noHover><ColHeader label="Daily AOV" tip="Average daily order value after the agent was set up, compared to the same number of days before." /></Table.ColumnHeaderCell>
                     <Table.ColumnHeaderCell noHover><ColHeader label="Basket size" tip="Average number of items in each order after the agent was set up, compared to the same number of days before." /></Table.ColumnHeaderCell>
                     <Table.ColumnHeaderCell noHover><ColHeader label="Multi-product orders" tip="Percentage of orders containing 3 or more distinct products after the agent was set up, compared to the same number of days before." /></Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell noHover width="1">Status</Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell noHover width="1" />
+                    <Table.ColumnHeaderCell noHover>Status</Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell noHover />
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>

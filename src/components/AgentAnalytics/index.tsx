@@ -13,7 +13,7 @@ import {
   Tooltip,
   vars,
 } from '@deliverect/galaxy-react'
-import type { Agent } from '../../data/mockAgents'
+import { MOCK_AGENTS, type Agent } from '../../data/mockAgents'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -106,6 +106,46 @@ export const MOCK_FIX_RECORDS: FixRecord[] = [
   { id: '56', agentId: 'agent-2', agentName: 'Order Accuracy Guard', location: 'Mayfair',        affectedPlu: 'PLU-4462', lastErrorDate: '2026-05-07', fixAppliedDate: '2026-05-07', ordersRecovered: 15, avgOrderValue: 35.80, revenueSaved: 537.00, actionType: 'duplicate' },
   { id: '57', agentId: 'agent-2', agentName: 'Order Accuracy Guard', location: 'Fitzrovia',      affectedPlu: 'PLU-1119', lastErrorDate: '2026-05-14', fixAppliedDate: '2026-05-14', ordersRecovered: 13, avgOrderValue: 26.60, revenueSaved: 345.80, actionType: 'price' },
 ]
+
+// ── June 2026 fix records — volume per location is proportional to how many
+//    days that location has been active (longer-active locations resolve more).
+//    Records are dated early June so they appear in the current-month view. ────
+;(() => {
+  const supportAgent = MOCK_AGENTS.find(a => a.id === 'agent-2')
+  if (!supportAgent) return
+  const refToday = new Date('2026-06-04')
+  const actionTypes = ['price', 'modifier', 'duplicate', 'instructions']
+  let seq = 1000
+  supportAgent.locations.forEach((loc, li) => {
+    const added = new Date(loc.addedAt)
+    const daysActive = Math.max(1, Math.round((refToday.getTime() - added.getTime()) / 86_400_000))
+    // ~1 record per ~2 active weeks (min 1), so totals scale with active days
+    const recordCount = Math.min(8, Math.max(1, Math.round(daysActive / 14)))
+    // don't date a fix before the location was added (June-added locations)
+    const startDay = added.getFullYear() === 2026 && added.getMonth() === 5
+      ? Math.min(added.getDate(), 3)
+      : 1
+    const span = 4 - startDay // June startDay..3
+    for (let k = 0; k < recordCount; k++) {
+      const day = String(startDay + ((li + k) % span)).padStart(2, '0')
+      const orders = 6 + ((li * 2 + k * 5) % 18)
+      const aov = Math.round((20 + ((li + k * 3) % 16)) * 10) / 10
+      MOCK_FIX_RECORDS.push({
+        id: `jun-${seq++}`,
+        agentId: 'agent-2',
+        agentName: supportAgent.name,
+        location: loc.name,
+        affectedPlu: `PLU-${6000 + seq}`,
+        lastErrorDate: `2026-06-${day}`,
+        fixAppliedDate: `2026-06-${day}`,
+        ordersRecovered: orders,
+        avgOrderValue: aov,
+        revenueSaved: Math.round(orders * aov * 100) / 100,
+        actionType: actionTypes[(li + k) % actionTypes.length],
+      })
+    }
+  })
+})()
 
 // ─── Date helpers ─────────────────────────────────────────────────────────────
 

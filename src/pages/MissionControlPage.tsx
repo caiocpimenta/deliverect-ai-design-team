@@ -362,7 +362,7 @@ export function MissionControlPage() {
 
               <DataCard.Root flex={1}>
                 <DataCard.Header>
-                  <DataCard.Title tooltip="Estimated revenue protected by agent interventions">Revenue loss prevented</DataCard.Title>
+                  <DataCard.Title tooltip="Estimated revenue protected by agent interventions">Revenue protected</DataCard.Title>
                 </DataCard.Header>
                 <DataCard.Content>
                   <Inline space="100" alignY="center">

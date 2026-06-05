@@ -19,3 +19,24 @@ body {
 .v250_1hrjdma3 {
   text-decoration: none;
 }
+
+/* Overview locations tables (Menu + Support): fixed column widths so they don't
+   resize when paginating (widths derive from the header, not page content).
+   Status and the action-icon columns hug their content; the rest share the
+   remaining space. Widths must live on the <th> via nth-child because
+   Table.ColumnHeaderCell does not forward inline styles. */
+.menu-locations-table table,
+.support-locations-table table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+/* Menu table: 1 = Locations, 10 = Status, 11 = actions (eye + ellipsis) */
+.menu-locations-table table thead th:nth-child(1)  { width: 15%; }
+.menu-locations-table table thead th:nth-child(10) { width: 84px; }
+.menu-locations-table table thead th:nth-child(11) { width: 76px; }
+
+/* Support table: 1 = Location, 8 = Status, 9 = actions (ellipsis) */
+.support-locations-table table thead th:nth-child(1) { width: 15%; }
+.support-locations-table table thead th:nth-child(8) { width: 84px; }
+.support-locations-table table thead th:nth-child(9) { width: 48px; }
