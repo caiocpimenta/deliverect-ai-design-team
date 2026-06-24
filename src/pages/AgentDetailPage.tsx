@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import {
   Badge,
   Button,
@@ -227,7 +227,11 @@ export function AgentDetailPage() {
   const { agentId } = useParams<{ agentId: string }>()
   const navigate = useNavigate()
   const { agents, removeAgent } = useAgents()
-  const [activeTab, setActiveTab] = useState('overview')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const activeTab = searchParams.get('tab') ?? 'overview'
+  const setActiveTab = (tab: string) => setSearchParams(p => { const n = new URLSearchParams(p); n.set('tab', tab); return n })
+  const [activityLocationPreset, setActivityLocationPreset] = useState<string[]>([])
+  const [activityKey, setActivityKey] = useState(0)
   const [reportDrawerOpen, setReportDrawerOpen] = useState(false)
   const [fixDrawerOpen, setFixDrawerOpen] = useState(false)
   const [selectedLocation, setSelectedLocation] = useState<{ name: string; records: FixRecord[] } | null>(null)
@@ -611,7 +615,7 @@ export function AgentDetailPage() {
                     <Table.ColumnHeaderCell noHover><ColHeader label="Locations" tip="Metrics reflect location-level data. Multiple Autonomous Menu agents in the same location can share similar results." /></Table.ColumnHeaderCell>
                     <Table.ColumnHeaderCell noHover>Created time</Table.ColumnHeaderCell>
                     <Table.ColumnHeaderCell noHover>Last optimization</Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell noHover>Optimization cycles</Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell noHover><ColHeader label="Optimizations" tip="Total number of optimization runs performed by the agent for this location." /></Table.ColumnHeaderCell>
                     <Table.ColumnHeaderCell noHover><ColHeader label="Total orders" tip="Total orders received after the agent was set up, compared to the same number of days before." /></Table.ColumnHeaderCell>
                     <Table.ColumnHeaderCell noHover><ColHeader label="Total revenue" tip="Total revenue earned after the agent was set up, compared to the same number of days before." /></Table.ColumnHeaderCell>
                     <Table.ColumnHeaderCell noHover><ColHeader label="Daily AOV" tip="Average daily order value after the agent was set up, compared to the same number of days before." /></Table.ColumnHeaderCell>
@@ -680,12 +684,22 @@ export function AgentDetailPage() {
                             </DropdownMenu.Trigger>
                             <DropdownMenu.Content side="left" align="start">
                               <DropdownMenu.Item
-                                icon={<GraphBarOutline />}
                                 onClick={() => lastReportLog && setReportDrawerOpen(true)}
                                 disabled={!lastReportLog}
                               >
                                 See report
                               </DropdownMenu.Item>
+                              <DropdownMenu.Item onClick={() => {
+                                setActivityLocationPreset([loc.name])
+                                setActivityKey(k => k + 1)
+                                setActiveTab('activity')
+                              }}>
+                                Open activity log
+                              </DropdownMenu.Item>
+                              <DropdownMenu.Item>Pause</DropdownMenu.Item>
+                              <DropdownMenu.Item>Deactivate</DropdownMenu.Item>
+                              <DropdownMenu.Separator />
+                              <DropdownMenu.Item status="critical">Remove location</DropdownMenu.Item>
                             </DropdownMenu.Content>
                           </DropdownMenu.Root>
                         </Inline>
@@ -725,7 +739,7 @@ export function AgentDetailPage() {
         )}
 
         {activeTab === 'activity' && (
-          <ActivityLog logs={agentLogs} showPreviewColumn={false} showChips={false} showPrefix={false} compactTitle stickyToolbar />
+          <ActivityLog key={activityKey} initialLocationFilter={activityLocationPreset} logs={agentLogs} showPreviewColumn={false} showChips={false} showPrefix={false} compactTitle stickyToolbar />
         )}
 
         {activeTab === 'insights' && (

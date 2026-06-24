@@ -1,8 +1,10 @@
-import { useState, useMemo, useRef, useEffect } from 'react'
+import { useState, useMemo, useRef, useEffect, useLayoutEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   Badge,
   Button,
   CalendarOutline,
+  Link,
   CategoryOutline,
   Drawer,
   EyeOpenFill,
@@ -32,6 +34,12 @@ import { type AgentLog, type ReportData, PERMISSION_LABELS } from '../data/mockL
 
 function formatTimestamp(ts: string) {
   const d = new Date(ts)
+  const diffMs = Date.now() - d.getTime()
+  const diffMin = Math.floor(diffMs / 60000)
+  const diffH = Math.floor(diffMin / 60)
+  if (diffMin < 1)   return 'just now'
+  if (diffMin < 60)  return `${diffMin} min${diffMin > 1 ? 's' : ''} ago`
+  if (diffH   < 24)  return `${diffH} h ago`
   return d.toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
 }
 
@@ -107,24 +115,231 @@ function LogChips({ log }: { log: AgentLog }) {
   return null
 }
 
+// ─── Permission reasoning ────────────────────────────────────────────────────
+
+const ACTION_DESCRIPTIONS: Record<string, string> = {
+  'New optimization':                  'An automated menu optimization where the AI agent applies changes across one or more permissions to improve performance.',
+  'Optimization check':                'A scheduled review where the AI agent evaluates menu performance. No changes are applied when the menu is already performing within target.',
+  'Menu published':                    'A menu update pushed live to one or more delivery channels.',
+  'Publish menus':                     'A menu update pushed live to one or more delivery channels.',
+  'Optimization performance report':   'A performance summary comparing the optimized menu against a control group over a tracked period.',
+  'Item sync':                         'A re-sync of menu items between the POS system and connected delivery channels to resolve catalogue mismatches.',
+  'Item snooze':                       'Temporary removal of unavailable items from active channels to prevent failed orders.',
+}
+
+const ALL_MENU_PERMISSIONS = ['position', 'upsells', 'meal_deals', 'content', 'best_sellers']
+
+const PERMISSION_DISPLAY_LABELS: Record<string, string> = {
+  position:     'Items positioning',
+  upsells:      'Upsell groups',
+  meal_deals:   'Meal deals',
+  content:      'Content descriptions',
+  best_sellers: 'Best sellers category',
+}
+
+const PERMISSION_REASONING: Record<string, { applied: string; skipped: string }> = {
+  position: {
+    applied: 'Items in the top 3 positions drive 67% of category revenue. High-margin SKUs were repositioned to capture this opportunity and improve visibility during the peak ordering window.',
+    skipped: 'Current item positioning is already optimised — top-performing items are in the highest-visibility slots. No repositioning was needed.',
+  },
+  upsells: {
+    applied: 'Upsell groups were reordered to surface the highest-converting add-ons earlier in the order flow. Drinks and sides are now promoted alongside the most popular mains.',
+    skipped: 'Upsell groups are performing above target. Attach rates for the current configuration are strong — no changes were needed.',
+  },
+  meal_deals: {
+    applied: 'The meal deal bundle was restructured after attach rate dropped below target. The new bundle leads with a higher-margin item and better matches observed order patterns.',
+    skipped: 'Meal deal performance is within the expected range. The current bundle structure remains effective and attach rates are healthy.',
+  },
+  content: {
+    applied: 'Item descriptions were refreshed to highlight key ingredients and portion sizes, improving click-through on high-margin items during the peak window.',
+    skipped: 'Item descriptions are clear, accurate, and performing well. No content updates were required at this time.',
+  },
+  best_sellers: {
+    applied: 'The best sellers row was updated to reflect current top performers after a shift in order mix over the past 7 days.',
+    skipped: 'Your menu already has a Bestsellers section in the right position — no changes were needed.',
+  },
+}
+
+function PermissionReasoningItem({ permKey, applied }: { permKey: string; applied: boolean }) {
+  const [expanded, setExpanded] = useState(false)
+  const [overflows, setOverflows] = useState<boolean | null>(null)
+  const textRef = useRef<HTMLDivElement>(null)
+  const cardBg = vars.colors.surface.neutral.static.default
+  const label = PERMISSION_DISPLAY_LABELS[permKey] ?? permKey
+  const reasoning = applied
+    ? (PERMISSION_REASONING[permKey]?.applied ?? 'This permission was applied.')
+    : (PERMISSION_REASONING[permKey]?.skipped ?? 'No changes were needed.')
+
+  useLayoutEffect(() => {
+    const el = textRef.current
+    if (!el) return
+    setOverflows(el.scrollHeight > 40)
+  }, [reasoning])
+
+  const shouldTruncate = overflows === true && !expanded
+
+  return (
+    <div style={{
+      backgroundColor: cardBg,
+      border: `1px solid ${vars.colors.border.neutral.default.default}`,
+      borderRadius: vars.border.radius['100'],
+      padding: `${vars.spacing['150']} ${vars.spacing['200']}`,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: vars.spacing['100'],
+    }}>
+      <Inline space="100" alignY="center">
+        <Text size="sm" weight="medium" style={{ flex: 1 }}>{label}</Text>
+        <Badge size="sm" status={applied ? 'success' : 'neutral'}>
+          {applied ? 'Applied' : 'No changes'}
+        </Badge>
+      </Inline>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: vars.spacing['025'] }}>
+        <div style={{ position: 'relative' }}>
+          <div
+            ref={textRef}
+            style={{ overflow: 'hidden', maxHeight: shouldTruncate ? '40px' : 'none' }}
+          >
+            <Text size="sm" color="secondary">{reasoning}</Text>
+          </div>
+          {shouldTruncate && (
+            <div style={{
+              position: 'absolute',
+              bottom: 0, left: 0, right: 0,
+              height: 24,
+              background: `linear-gradient(to bottom, transparent, ${cardBg})`,
+              pointerEvents: 'none',
+            }} />
+          )}
+        </div>
+        {overflows && (
+          <button
+            type="button"
+            onClick={() => setExpanded(e => !e)}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, alignSelf: 'flex-start' }}
+          >
+            <Text size="sm" color="secondary">{expanded ? 'Show less' : 'Show more'}</Text>
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
+
 // ─── Drawer bodies ────────────────────────────────────────────────────────────
 
-function OptimisationDrawerBody({ log }: { log: AgentLog }) {
+function AiReasoningBlock({ detail, reason }: { detail: string; reason: string }) {
+  const [expanded, setExpanded] = useState(false)
+  const [overflows, setOverflows] = useState<boolean | null>(null)
+  const textRef = useRef<HTMLDivElement>(null)
+  const cardBg = vars.colors.surface.neutral.static.default
+
+  useLayoutEffect(() => {
+    const el = textRef.current
+    if (!el) return
+    setOverflows(el.scrollHeight > 40)
+  }, [detail])
+
+  const shouldTruncate = overflows === true && !expanded
+
+  return (
+    <div style={{
+      backgroundColor: cardBg,
+      border: `1px solid ${vars.colors.border.neutral.default.default}`,
+      borderRadius: vars.border.radius['100'],
+      padding: `${vars.spacing['150']} ${vars.spacing['200']}`,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: vars.spacing['100'],
+    }}>
+      <Text size="sm" weight="medium" color="secondary">AI reasoning</Text>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: vars.spacing['025'] }}>
+        <div style={{ position: 'relative' }}>
+          <div
+            ref={textRef}
+            style={{ overflow: 'hidden', maxHeight: shouldTruncate ? '40px' : 'none' }}
+          >
+            <Text size="sm">{detail}</Text>
+            {expanded && (
+              <Text size="sm" style={{ display: 'block', marginTop: vars.spacing['100'] }}>
+                {reason}
+              </Text>
+            )}
+          </div>
+          {shouldTruncate && (
+            <div style={{
+              position: 'absolute',
+              bottom: 0, left: 0, right: 0,
+              height: 24,
+              background: `linear-gradient(to bottom, transparent, ${cardBg})`,
+              pointerEvents: 'none',
+            }} />
+          )}
+        </div>
+
+        {overflows && (
+          <button
+            type="button"
+            onClick={() => setExpanded(e => !e)}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, alignSelf: 'flex-start' }}
+          >
+            <Text size="sm" color="secondary">{expanded ? 'Show less' : 'Show more'}</Text>
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function OptimisationDrawerBody({ log, cycle }: { log: AgentLog; cycle?: number }) {
+  const navigate = useNavigate()
   return (
     <Stack space="300" height="auto">
-      <Stack space="050" height="auto">
-        <Text size="sm" weight="medium" color="secondary">Timestamp</Text>
-        <Text size="sm">{formatTimestamp(log.timestamp)}</Text>
-      </Stack>
-
-      <Stack space="050" height="auto">
-        <Text size="sm" weight="medium" color="secondary">Reason</Text>
-        <Text size="sm">{log.reason}</Text>
-      </Stack>
-
-      {log.permissions.length > 0 && (
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: cycle && log.location !== 'All locations' ? '1fr 1fr 1fr' : '1fr 1fr',
+        gap: vars.spacing['300'],
+      }}>
+        {cycle && log.location !== 'All locations' && (
+          <Stack space="050" height="auto">
+            <Text size="sm" weight="medium" color="secondary">Optimization preview</Text>
+            <Link
+              as="button"
+              size="sm"
+              onClick={() => navigate(`/agents/${log.agentId}/menu-preview`, { state: { locationName: log.location, cycleNumber: cycle } })}
+            >
+              Optimization {cycle}
+            </Link>
+          </Stack>
+        )}
         <Stack space="050" height="auto">
-          <Text size="sm" weight="medium" color="secondary">Updated content</Text>
+          <Text size="sm" weight="medium" color="secondary">Timestamp</Text>
+          <Text size="sm">{formatTimestamp(log.timestamp)}</Text>
+        </Stack>
+        <Stack space="050" height="auto">
+          <Text size="sm" weight="medium" color="secondary">Location</Text>
+          <Text size="sm">{log.location}</Text>
+        </Stack>
+      </div>
+
+      <AiReasoningBlock detail={log.detail} reason={log.reason} />
+
+      {log.agentType === 'MENU_AGENT' ? (
+        <Stack space="100" height="auto">
+          <Text size="sm" weight="medium" color="secondary">Proposed optimizations</Text>
+          {ALL_MENU_PERMISSIONS.map(permKey => (
+            <PermissionReasoningItem
+              key={permKey}
+              permKey={permKey}
+              applied={log.permissions.includes(permKey)}
+            />
+          ))}
+        </Stack>
+      ) : log.permissions.length > 0 && (
+        <Stack space="050" height="auto">
+          <Text size="sm" weight="medium" color="secondary">Permissions</Text>
           <Inline space="050">
             {log.permissions.map(p => (
               <Badge key={p} size="sm" status="neutral">{PERMISSION_LABELS[p] ?? p}</Badge>
@@ -133,23 +348,7 @@ function OptimisationDrawerBody({ log }: { log: AgentLog }) {
         </Stack>
       )}
 
-      <Stack space="050" height="auto">
-        <Text size="sm" weight="medium" color="secondary">Detail</Text>
-        <Text size="sm">{log.detail}</Text>
-      </Stack>
-
-      <Stack space="050" height="auto">
-        <Text size="sm" weight="medium" color="secondary">Location</Text>
-        <Text size="sm">{log.location}</Text>
-      </Stack>
-
-      <Stack space="050" height="auto">
-        <Text size="sm" weight="medium" color="secondary">Agent type</Text>
-        <Inline space="075" alignY="center">
-          <AgentTypeIcon type={log.agentType} />
-          <Text size="sm">{agentTypeLabel(log.agentType)}</Text>
-        </Inline>
-      </Stack>
+      {/* Agent type — hidden, kept for future use */}
     </Stack>
   )
 }
@@ -157,15 +356,7 @@ function OptimisationDrawerBody({ log }: { log: AgentLog }) {
 function PublicationDrawerBody({ log }: { log: AgentLog }) {
   return (
     <Stack space="300" height="auto">
-      <Stack space="050" height="auto">
-        <Text size="sm" weight="medium" color="secondary">Timestamp</Text>
-        <Text size="sm">{formatTimestamp(log.timestamp)}</Text>
-      </Stack>
-
-      <Stack space="050" height="auto">
-        <Text size="sm" weight="medium" color="secondary">Reason</Text>
-        <Text size="sm">{log.reason}</Text>
-      </Stack>
+      <AiReasoningBlock detail={log.detail} reason={log.reason} />
 
       {log.channels && log.channels.length > 0 && (
         <Stack space="050" height="auto">
@@ -178,27 +369,30 @@ function PublicationDrawerBody({ log }: { log: AgentLog }) {
         </Stack>
       )}
 
-      <Stack space="050" height="auto">
-        <Text size="sm" weight="medium" color="secondary">Location</Text>
-        <Text size="sm">{log.location}</Text>
-      </Stack>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: vars.spacing['300'] }}>
+        <Stack space="050" height="auto">
+          <Text size="sm" weight="medium" color="secondary">Timestamp</Text>
+          <Text size="sm">{formatTimestamp(log.timestamp)}</Text>
+        </Stack>
+        <Stack space="050" height="auto">
+          <Text size="sm" weight="medium" color="secondary">Location</Text>
+          <Text size="sm">{log.location}</Text>
+        </Stack>
+      </div>
     </Stack>
   )
 }
 
-export function ReportDrawerBody({ report, reason }: { report: ReportData; reason: string }) {
+export function ReportDrawerBody({ report, reason, detail }: { report: ReportData; reason: string; detail: string }) {
   const [showDetails, setShowDetails] = useState(false)
 
   return (
     <Stack space="300" height="auto">
+      <AiReasoningBlock detail={detail} reason={reason} />
+
       <Stack space="050" height="auto">
         <Text size="sm" weight="medium" color="secondary">Tracked period</Text>
         <Text size="sm">{report.trackedPeriod}</Text>
-      </Stack>
-
-      <Stack space="050" height="auto">
-        <Text size="sm" weight="medium" color="secondary">Reason</Text>
-        <Text size="sm">{reason}</Text>
       </Stack>
 
       {/* At-a-glance metrics table */}
@@ -360,11 +554,13 @@ interface Props {
   compactTitle?: boolean
   periodLabel?: string
   stickyToolbar?: boolean
+  initialLocationFilter?: string[]
 }
 
-export function ActivityLog({ logs, showAgentColumn = false, showAgentTypeFilter = false, showChips = true, showPrefix = true, compactTitle = false, periodLabel, stickyToolbar = false }: Props) {
+export function ActivityLog({ logs, showAgentColumn = false, showAgentTypeFilter = false, showChips = true, showPrefix = true, compactTitle = false, periodLabel, stickyToolbar = false, initialLocationFilter = [] }: Props) {
+  const navigate = useNavigate()
   const [search, setSearch]                   = useState('')
-  const [locationFilter, setLocationFilter]   = useState<string[]>([])
+  const [locationFilter, setLocationFilter]   = useState<string[]>(initialLocationFilter)
   const [statusFilter, setStatusFilter]       = useState<string[]>([])
   const [agentTypeFilter, setAgentTypeFilter] = useState<string[]>([])
   const [activityTypeFilter, setActivityTypeFilter] = useState<string[]>([])
@@ -465,7 +661,7 @@ export function ActivityLog({ logs, showAgentColumn = false, showAgentTypeFilter
         if (t < dateRange.from.getTime() || t > dateRange.to.getTime()) return false
       }
       return true
-    })
+    }).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
   }, [logs, search, locationFilter, statusFilter, agentTypeFilter, activityTypeFilter, dateRange])
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
@@ -536,7 +732,7 @@ export function ActivityLog({ logs, showAgentColumn = false, showAgentTypeFilter
         <Filter.Select
           id="activityType"
           icon={<CategoryOutline size="sm" />}
-          tagLabel={selectionTag(activityTypeFilter, activityTypeOptions, 'Activity type', 'activity types')}
+          tagLabel={selectionTag(activityTypeFilter, activityTypeOptions, 'All activities', 'activity types')}
           applyLabel="Apply"
           multiple
           value={activityTypeFilter}
@@ -553,7 +749,7 @@ export function ActivityLog({ logs, showAgentColumn = false, showAgentTypeFilter
         <Filter.Select
           id="location"
           icon={<PinOutline size="sm" />}
-          tagLabel={selectionTag(locationFilter, locationOptions, 'Location', 'locations')}
+          tagLabel={selectionTag(locationFilter, locationOptions, 'All locations', 'locations')}
           applyLabel="Apply"
           multiple
           value={locationFilter}
@@ -646,7 +842,11 @@ export function ActivityLog({ logs, showAgentColumn = false, showAgentTypeFilter
                 />
               </Input.Group>
             </div>
-            <Filter.Menu label="Filter" filterConfigMap={filterConfigMap} />
+            <Filter.Menu
+              label="Filter"
+              filterConfigMap={filterConfigMap}
+              initialFilterKeys={['location', 'activityType']}
+            />
             {periodLabel && (
               <InputChip Icon={<CalendarOutline size="sm" />}>
                 {periodLabel}
@@ -682,11 +882,26 @@ export function ActivityLog({ logs, showAgentColumn = false, showAgentTypeFilter
                     </Text>
                     <Text size="sm" color="secondary" style={compactTitle ? { lineHeight: 1.3 } : undefined}>
                       {(() => {
-                        const base = showAgentColumn
-                          ? `${log.action} · ${toLocationLabel(log.location)}`
-                          : toLocationLabel(log.location)
+                        const locationLabel = toLocationLabel(log.location)
                         const cycle = cycleByLogId.get(log.id)
-                        return cycle ? `${base} · Cycle ${cycle}` : base
+                        if (cycle && log.location !== 'All locations') {
+                          return (
+                            <span>
+                              {showAgentColumn && `${log.action} · `}
+                              <Link
+                                as="button"
+                                size="sm"
+                                onClick={(e: React.MouseEvent) => { e.stopPropagation(); navigate(`/agents/${log.agentId}/menu-preview`, { state: { locationName: log.location, cycleNumber: cycle } }) }}
+                              >
+                                Optimization {cycle}
+                              </Link>
+                              {' · '}{locationLabel}
+                            </span>
+                          )
+                        }
+                        return showAgentColumn
+                          ? `${log.action} · ${locationLabel}`
+                          : locationLabel
                       })()}
                     </Text>
                     {showChips && <LogChips log={log} />}
@@ -695,24 +910,17 @@ export function ActivityLog({ logs, showAgentColumn = false, showAgentTypeFilter
 
                 <List.Suffix alignY="center">
                   <Inline space="150" alignY="center">
-                    <div style={{ width: 32, display: 'flex', justifyContent: 'flex-end', flexShrink: 0 }}>
-                      {log.logType === 'optimisation' && (
-                        <Button
-                          variant="transparent"
-                          size="sm"
-                          Icon={<EyeOpenFill size="md" />}
-                          aria-label="Preview change"
-                          onClick={e => { e.stopPropagation(); setSelectedLog(log) }}
-                        />
-                      )}
-                    </div>
-                    <div style={{ width: 72, display: 'flex', justifyContent: 'flex-end', flexShrink: 0 }}>
+                    {/* Status badge — hidden, kept for future use */}
+                    <div style={{ display: 'none' }}>
                       <Badge
                         size="sm"
                         status={log.status === 'success' ? 'success' : log.status === 'warning' ? 'warning' : 'info'}
                       >
                         {statusBadgeLabel(log)}
                       </Badge>
+                    </div>
+                    <div style={{ display: 'none', justifyContent: 'flex-end', flexShrink: 0 }}>
+                      <Badge size="sm" status="neutral">{log.actor}</Badge>
                     </div>
                     <div style={{ width: 150, display: 'flex', justifyContent: 'flex-end', flexShrink: 0 }}>
                       <Text size="sm" color="secondary" style={{ whiteSpace: 'nowrap' }}>
@@ -748,43 +956,40 @@ export function ActivityLog({ logs, showAgentColumn = false, showAgentTypeFilter
         <Drawer.Content overlay style={{ width: 520 }}>
           {selectedLog && (
             <>
-              <Drawer.Header>
-                <Inline space="100" alignY="center">
-                  <Heading level={3}>{selectedLog.action}</Heading>
-                  {selectedLog.logType === 'report' && selectedLog.report ? (
-                    <Badge size="sm" status={verdictBadgeStatus(selectedLog.report.verdict)}>
-                      {selectedLog.report.verdictLabel}
-                    </Badge>
-                  ) : (
-                    <Badge
-                      size="sm"
-                      status={selectedLog.status === 'success' ? 'success' : selectedLog.status === 'warning' ? 'warning' : 'info'}
-                    >
-                      {statusBadgeLabel(selectedLog)}
-                    </Badge>
+              <Drawer.Header alignY="top">
+                <Stack space="050" height="auto">
+                  <Inline space="100" alignY="center">
+                    <Heading level={3}>{selectedLog.action}</Heading>
+                    {selectedLog.logType === 'report' && selectedLog.report ? (
+                      <Badge size="sm" status={verdictBadgeStatus(selectedLog.report.verdict)}>
+                        {selectedLog.report.verdictLabel}
+                      </Badge>
+                    ) : (
+                      <span style={{ display: 'none' }}>
+                        <Badge
+                          size="sm"
+                          status={selectedLog.status === 'success' ? 'success' : selectedLog.status === 'warning' ? 'warning' : 'info'}
+                        >
+                          {statusBadgeLabel(selectedLog)}
+                        </Badge>
+                      </span>
+                    )}
+                  </Inline>
+                  {ACTION_DESCRIPTIONS[selectedLog.action] && (
+                    <Text size="sm" color="secondary">{ACTION_DESCRIPTIONS[selectedLog.action]}</Text>
                   )}
-                </Inline>
+                </Stack>
               </Drawer.Header>
 
               <Drawer.Body>
-                {selectedLog.logType === 'optimisation' && <OptimisationDrawerBody log={selectedLog} />}
+                {selectedLog.logType === 'optimisation' && <OptimisationDrawerBody log={selectedLog} cycle={cycleByLogId.get(selectedLog.id)} />}
                 {selectedLog.logType === 'publication'  && <PublicationDrawerBody  log={selectedLog} />}
                 {selectedLog.logType === 'report' && selectedLog.report && (
-                  <ReportDrawerBody report={selectedLog.report} reason={selectedLog.reason} />
+                  <ReportDrawerBody report={selectedLog.report} reason={selectedLog.reason} detail={selectedLog.detail} />
                 )}
               </Drawer.Body>
 
-              <Drawer.Footer>
-                <Button status="neutral" variant="outline" onClick={() => setSelectedLog(null)}>
-                  Close
-                </Button>
-                {selectedLog.logType === 'optimisation' && (
-                  <Button status="primary" LeadingIcon={<EyeOpenFill />}>Preview</Button>
-                )}
-                {selectedLog.logType === 'report' && (
-                  <Button status="primary">Export</Button>
-                )}
-              </Drawer.Footer>
+              {/* Drawer.Footer with Close/Preview/Export buttons — hidden, kept for future use */}
             </>
           )}
         </Drawer.Content>

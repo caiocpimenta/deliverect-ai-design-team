@@ -46,6 +46,7 @@ export interface AgentLog {
   location: string
   timestamp: string
   status: 'success' | 'info' | 'warning'
+  actor: string
   permissions: string[]
   reason: string
   channels?: string[]
@@ -135,6 +136,7 @@ export const MOCK_LOGS: AgentLog[] = [
     location: 'Liverpool St',
     timestamp: '2026-05-19T11:30:00Z',
     status: 'success',
+    actor: 'AI agent',
     permissions: ['sync_products'],
     reason: 'Product catalogue mismatch detected between POS and delivery channel — 6 items were out of sync.',
   },
@@ -149,6 +151,7 @@ export const MOCK_LOGS: AgentLog[] = [
     location: 'Victoria',
     timestamp: '2026-05-19T09:15:00Z',
     status: 'success',
+    actor: 'AI agent',
     permissions: ['snooze_products'],
     reason: 'Items flagged as unavailable by kitchen — agent snoozed them to prevent further failed orders.',
   },
@@ -163,6 +166,7 @@ export const MOCK_LOGS: AgentLog[] = [
     location: 'Canary Wharf',
     timestamp: '2026-05-18T22:05:00Z',
     status: 'success',
+    actor: 'Marcus T.',
     permissions: ['publish_menu'],
     reason: 'Price correction applied to 4 items — menu re-published to propagate changes to all channels.',
   },
@@ -177,6 +181,7 @@ export const MOCK_LOGS: AgentLog[] = [
     location: "King's Cross",
     timestamp: '2026-05-18T14:42:00Z',
     status: 'warning',
+    actor: 'AI agent',
     permissions: ['sync_products'],
     reason: 'Modifier group missing from channel payload — re-sync triggered to restore correct checkout options.',
   },
@@ -191,6 +196,7 @@ export const MOCK_LOGS: AgentLog[] = [
     location: 'Waterloo',
     timestamp: '2026-05-17T08:30:00Z',
     status: 'success',
+    actor: 'AI agent',
     permissions: ['snooze_products'],
     reason: 'Kitchen reported stock unavailability — agent snoozed affected items to prevent customer disappointment.',
   },
@@ -205,6 +211,7 @@ export const MOCK_LOGS: AgentLog[] = [
     location: 'Shoreditch',
     timestamp: '2026-05-16T20:00:00Z',
     status: 'success',
+    actor: 'Sophie R.',
     permissions: ['publish_menu'],
     reason: 'Seasonal item additions approved — agent published the updated menu across all connected channels.',
   },
@@ -219,6 +226,7 @@ export const MOCK_LOGS: AgentLog[] = [
     location: 'London Bridge',
     timestamp: '2026-05-15T07:55:00Z',
     status: 'success',
+    actor: 'AI agent',
     permissions: ['sync_products'],
     reason: 'Breakfast menu expansion detected on POS — 5 new items missing from Just Eat catalogue.',
   },
@@ -233,6 +241,7 @@ export const MOCK_LOGS: AgentLog[] = [
     location: 'Paddington',
     timestamp: '2026-05-14T13:20:00Z',
     status: 'success',
+    actor: 'AI agent',
     permissions: ['snooze_products', 'publish_menu'],
     reason: 'Items flagged unavailable mid-service — agent snoozed them and re-published to minimise order failures.',
   },
@@ -247,6 +256,7 @@ export const MOCK_LOGS: AgentLog[] = [
     location: 'Bethnal Green',
     timestamp: '2026-05-13T16:10:00Z',
     status: 'warning',
+    actor: 'AI agent',
     permissions: ['sync_products'],
     reason: 'Partial sync failure detected on Uber Eats — image assets and descriptions were incomplete for 3 items.',
   },
@@ -261,6 +271,7 @@ export const MOCK_LOGS: AgentLog[] = [
     location: 'Hammersmith',
     timestamp: '2026-05-12T11:00:00Z',
     status: 'success',
+    actor: 'Priya N.',
     permissions: ['publish_menu'],
     reason: 'Approved price revision applied — menu re-published to all 3 channels to reflect updated pricing.',
   },
@@ -275,6 +286,7 @@ export const MOCK_LOGS: AgentLog[] = [
     location: 'All locations',
     timestamp: '2026-05-07T10:55:00Z',
     status: 'success',
+    actor: 'AI agent',
     permissions: ['ue-pct-discount', 'dr-pct-off'],
     reason: 'Sales dropped 22% below weekly average across Uber Eats and Deliveroo — underperforming threshold of 20% exceeded.',
   },
@@ -289,6 +301,7 @@ export const MOCK_LOGS: AgentLog[] = [
     location: 'Victoria',
     timestamp: '2026-05-11T08:47:00Z',
     status: 'success',
+    actor: 'AI agent',
     permissions: ['snooze_products'],
     reason: 'Kitchen marked item as unavailable at start of service — agent snoozed it automatically to avoid failed orders.',
   },
@@ -303,6 +316,7 @@ export const MOCK_LOGS: AgentLog[] = [
     location: 'All locations',
     timestamp: '2026-05-06T16:05:00Z',
     status: 'info',
+    actor: 'AI agent',
     permissions: ['ue-pct-discount', 'ue-bundle'],
     reason: 'Revenue target of £2,400 reached for the week. Agent paused active promotions to avoid margin erosion.',
   },
@@ -317,6 +331,7 @@ export const MOCK_LOGS: AgentLog[] = [
     location: 'Liverpool St',
     timestamp: '2026-05-09T14:33:00Z',
     status: 'success',
+    actor: 'AI agent',
     permissions: ['sync_products', 'publish_menu'],
     reason: 'Channel integration reset detected — full re-sync and republish triggered to restore correct menu state.',
   },
@@ -331,12 +346,16 @@ export const MOCK_LOGS: AgentLog[] = [
     location: 'All locations',
     timestamp: '2026-05-05T20:00:00Z',
     status: 'success',
+    actor: 'AI agent',
     permissions: ['ue-pct-discount', 'ue-happy-hour', 'email-campaign'],
     reason: 'Sales within ±8% of weekly average — flat threshold met. Agent created a time-limited offer and triggered email campaign to drive Friday evening traffic.',
   },
 ]
 
 // ─── Generated filler logs (pagination demo data) ───────────────────────────────
+
+const USER_ACTORS = ['Sophie R.', 'Marcus T.', 'Priya N.', 'James K.', 'Elena W.']
+const userActor = (seed: number) => USER_ACTORS[seed % USER_ACTORS.length]
 
 type LogVariant = {
   action: string
@@ -345,6 +364,7 @@ type LogVariant = {
   permissions: string[]
   detail: string
   reason: string
+  actor?: string
   channels?: string[]
   report?: ReportData
 }
@@ -358,21 +378,22 @@ const SUPPORT_LOCATIONS = [
 ]
 
 const MENU_VARIANTS: LogVariant[] = [
-  { action: 'Menu optimised', logType: 'optimisation', status: 'success', permissions: ['position', 'content'], detail: 'High-margin items promoted to the top section and item descriptions refreshed for the dinner window.', reason: 'AOV stagnant for 8 days and order volume threshold met. 7-day cooldown has passed.' },
-  { action: 'Menu optimised', logType: 'optimisation', status: 'success', permissions: ['upsells', 'best_sellers'], detail: 'Upsell groups reordered and the best-sellers row refreshed to reflect the current top performers.', reason: 'Best-seller mix shifted week-over-week. Order volume threshold met. 7-day cooldown has passed.' },
+  { action: 'New optimization', logType: 'optimisation', status: 'success', permissions: ['position', 'content'], detail: 'High-margin items promoted to the top section and item descriptions refreshed for the dinner window.', reason: 'AOV stagnant for 8 days and order volume threshold met. 7-day cooldown has passed.' },
+  { action: 'New optimization', logType: 'optimisation', status: 'success', permissions: ['upsells', 'best_sellers'], detail: 'Upsell groups reordered and the best-sellers row refreshed to reflect the current top performers.', reason: 'Best-seller mix shifted week-over-week. Order volume threshold met. 7-day cooldown has passed.' },
   { action: 'Menu published', logType: 'publication', status: 'success', permissions: [], detail: 'Optimised menu pushed live to all connected marketplaces after the overnight optimisation cycle.', reason: 'Automatic publication triggered immediately after the optimisation was applied.', channels: ['uber-eats', 'deliveroo', 'just-eat'] },
-  { action: 'Performance report', logType: 'report', status: 'info', permissions: [], detail: 'Inconclusive — baseline period established. 923 orders, £21,245.87 revenue, 93% multi-product rate.', reason: 'Report generated after the 7-day tracking window following the most recent optimisation.', report: SAMPLE_REPORT },
-  { action: 'Menu optimised', logType: 'optimisation', status: 'warning', permissions: ['meal_deals'], detail: 'Lunch meal deal rebuilt after the previous bundle underperformed on attach rate.', reason: 'Meal-deal attach rate dropped below target. Order volume threshold met. 7-day cooldown has passed.' },
-  { action: 'Menu optimised', logType: 'optimisation', status: 'success', permissions: ['position', 'upsells', 'content'], detail: 'Categories repositioned for the evening service and upsell prompts added to high-traffic items.', reason: 'AOV dropped 9% over the past 7 days. Sufficient order volume met. 7-day cooldown has passed.' },
+  { action: 'Optimization performance report', logType: 'report', status: 'info', permissions: [], detail: 'Inconclusive — baseline period established. 923 orders, £21,245.87 revenue, 93% multi-product rate.', reason: 'Report generated after the 7-day tracking window following the most recent optimisation.', report: SAMPLE_REPORT },
+  { action: 'New optimization', logType: 'optimisation', status: 'warning', permissions: ['meal_deals'], detail: 'Lunch meal deal rebuilt after the previous bundle underperformed on attach rate.', reason: 'Meal-deal attach rate dropped below target. Order volume threshold met. 7-day cooldown has passed.' },
+  { action: 'New optimization', logType: 'optimisation', status: 'success', permissions: ['position', 'upsells', 'content'], detail: 'Categories repositioned for the evening service and upsell prompts added to high-traffic items.', reason: 'AOV dropped 9% over the past 7 days. Sufficient order volume met. 7-day cooldown has passed.' },
+  { action: 'Optimization check', logType: 'optimisation', status: 'info', permissions: [], detail: 'Agent ran its scheduled optimisation check and found no changes needed — the current menu structure is already performing at target levels.', reason: 'Order volume and AOV thresholds checked. Current menu performance is within expected range; no optimisation required at this time.' },
 ]
 
 const SUPPORT_VARIANTS: LogVariant[] = [
-  { action: 'Item sync', logType: 'optimisation', status: 'success', permissions: ['sync_products'], detail: 'Menu items re-synced across Uber Eats and Deliveroo after a mismatch between POS and channel catalogue.', reason: 'Product catalogue mismatch detected between POS and delivery channel.' },
-  { action: 'Item snooze', logType: 'optimisation', status: 'success', permissions: ['snooze_products'], detail: 'Out-of-stock items snoozed across all channels after repeated failed orders were detected.', reason: 'Items flagged as unavailable by the kitchen — snoozed to prevent further failed orders.' },
-  { action: 'Publish menus', logType: 'publication', status: 'success', permissions: ['publish_menu'], detail: 'Updated menu pushed live to all channels following a price correction on several items.', reason: 'Price correction applied — menu re-published to propagate changes to all channels.', channels: ['uber-eats', 'deliveroo', 'just-eat'] },
-  { action: 'Item sync', logType: 'optimisation', status: 'warning', permissions: ['sync_products'], detail: 'Modifier groups re-synced on Deliveroo after optional add-ons stopped appearing at checkout.', reason: 'Modifier group missing from the channel payload — re-sync triggered to restore checkout options.' },
-  { action: 'Item snooze', logType: 'optimisation', status: 'success', permissions: ['snooze_products', 'publish_menu'], detail: 'Unavailable items snoozed and the updated menu immediately re-published to the affected channels.', reason: 'Items flagged unavailable mid-service — snoozed and re-published to minimise order failures.' },
-  { action: 'Item sync', logType: 'optimisation', status: 'success', permissions: ['sync_products'], detail: 'New items synced to Just Eat — live on POS but missing from the channel catalogue.', reason: 'Menu expansion detected on POS — new items missing from the Just Eat catalogue.' },
+  { action: 'Item sync',    logType: 'optimisation', status: 'success',  permissions: ['sync_products'],                    detail: 'Menu items re-synced across Uber Eats and Deliveroo after a mismatch between POS and channel catalogue.', reason: 'Product catalogue mismatch detected between POS and delivery channel.' },
+  { action: 'Item snooze',  logType: 'optimisation', status: 'success',  permissions: ['snooze_products'],                  detail: 'Out-of-stock items snoozed across all channels after repeated failed orders were detected.',              reason: 'Items flagged as unavailable by the kitchen — snoozed to prevent further failed orders.' },
+  { action: 'Publish menus',logType: 'publication',  status: 'success',  permissions: ['publish_menu'], actor: 'Sophie R.', detail: 'Updated menu pushed live to all channels following a price correction on several items.',                reason: 'Price correction applied — menu re-published to propagate changes to all channels.', channels: ['uber-eats', 'deliveroo', 'just-eat'] },
+  { action: 'Item sync',    logType: 'optimisation', status: 'warning',  permissions: ['sync_products'],                    detail: 'Modifier groups re-synced on Deliveroo after optional add-ons stopped appearing at checkout.',           reason: 'Modifier group missing from the channel payload — re-sync triggered to restore checkout options.' },
+  { action: 'Item snooze',  logType: 'optimisation', status: 'success',  permissions: ['snooze_products', 'publish_menu'],  detail: 'Unavailable items snoozed and the updated menu immediately re-published to the affected channels.',    reason: 'Items flagged unavailable mid-service — snoozed and re-published to minimise order failures.' },
+  { action: 'Item sync',    logType: 'optimisation', status: 'success',  permissions: ['sync_products'],                    detail: 'New items synced to Just Eat — live on POS but missing from the channel catalogue.',                  reason: 'Menu expansion detected on POS — new items missing from the Just Eat catalogue.' },
 ]
 
 function generateLogs(opts: {
@@ -403,6 +424,7 @@ function generateLogs(opts: {
       location,
       timestamp: d.toISOString(),
       status: v.status,
+      actor: v.actor ?? 'AI agent',
       permissions: v.permissions,
       reason: v.reason,
       ...(v.channels ? { channels: v.channels } : {}),
@@ -459,11 +481,12 @@ function generateMenuCycleLogs(opts: {
         agentName: opts.agentName,
         agentType: 'MENU_AGENT',
         logType: 'optimisation',
-        action: 'Menu optimised',
+        action: 'New optimization',
         detail: ov.detail,
         location,
         timestamp: tOpt.toISOString(),
         status: ov.status,
+        actor: 'AI agent',
         permissions: ov.permissions,
         reason: ov.reason,
       })
@@ -480,6 +503,7 @@ function generateMenuCycleLogs(opts: {
         location,
         timestamp: new Date(tOpt.getTime() + HOUR).toISOString(),
         status: 'success',
+        actor: 'AI agent',
         permissions: [],
         reason: 'Automatic publication triggered immediately after the optimisation was applied.',
         channels: ['uber-eats', 'deliveroo', 'just-eat'],
@@ -490,19 +514,22 @@ function generateMenuCycleLogs(opts: {
       if (c < n) {
         const rv = REPORT_VARIANTS[(locIdx + c) % REPORT_VARIANTS.length]
         const tReport = new Date(optTime(locIdx, c + 1, n).getTime() - 3 * HOUR)
+        // Every 3rd report is user-requested; the rest are auto-generated by the agent.
+        const reportActor = (locIdx + c) % 3 === 1 ? userActor(locIdx + c) : 'AI agent'
         out.push({
           id: `${opts.idPrefix}-${locIdx}-report-${c}`,
           agentId: opts.agentId,
           agentName: opts.agentName,
           agentType: 'MENU_AGENT',
           logType: 'report',
-          action: 'Performance report',
+          action: 'Optimization performance report',
           detail: rv.detail,
           location,
           timestamp: tReport.toISOString(),
           status: rv.status,
+          actor: reportActor,
           permissions: [],
-          reason: 'Generated automatically at the start of a new cycle — reports on the previous cycle’s tracked performance.',
+          reason: 'Generated automatically at the start of a new cycle — reports on the previous cycle\'s tracked performance.',
           report: SAMPLE_REPORT,
         })
       }
@@ -548,4 +575,118 @@ MOCK_LOGS.push(
     idPrefix: 'gen-support',
     startTimestamp: '2026-05-08T20:00:00Z',
   }),
+)
+
+// Recent logs — timestamps relative to now so the "X mins ago / X h ago" formatting is visible
+const _now = Date.now()
+const _minsAgo = (n: number) => new Date(_now - n * 60 * 1000).toISOString()
+const _hoursAgo = (n: number) => new Date(_now - n * 60 * 60 * 1000).toISOString()
+
+MOCK_LOGS.push(
+  {
+    id: 'recent-1',
+    agentId: 'agent-1',
+    agentName: 'Peak Hour Optimiser',
+    agentType: 'MENU_AGENT',
+    logType: 'optimisation',
+    action: 'New optimization',
+    detail: 'High-margin items promoted to the top section and item descriptions refreshed for the dinner window.',
+    location: 'London Bridge',
+    timestamp: _minsAgo(4),
+    status: 'success',
+    actor: 'AI agent',
+    permissions: ['position', 'content'],
+    reason: 'AOV stagnant for 8 days and order volume threshold met. 7-day cooldown has passed.',
+  },
+  {
+    id: 'recent-2',
+    agentId: 'agent-1',
+    agentName: 'Peak Hour Optimiser',
+    agentType: 'MENU_AGENT',
+    logType: 'publication',
+    action: 'Menu published',
+    detail: 'Optimised menu pushed live to all connected marketplaces after the overnight optimisation cycle.',
+    location: 'London Bridge',
+    timestamp: _minsAgo(3),
+    status: 'success',
+    actor: 'AI agent',
+    permissions: [],
+    reason: 'Automatic publication triggered immediately after the optimisation was applied.',
+    channels: ['uber-eats', 'deliveroo'],
+  },
+  {
+    id: 'recent-1b',
+    agentId: 'agent-1',
+    agentName: 'Peak Hour Optimiser',
+    agentType: 'MENU_AGENT',
+    logType: 'optimisation',
+    action: 'Optimization check',
+    detail: 'Agent ran its scheduled optimisation check and found no changes needed — the current menu structure is already performing at target levels.',
+    location: 'Shoreditch',
+    timestamp: _minsAgo(18),
+    status: 'info',
+    actor: 'AI agent',
+    permissions: [],
+    reason: 'Order volume and AOV thresholds checked. Current menu performance is within expected range; no optimisation required at this time.',
+  },
+  {
+    id: 'recent-3',
+    agentId: 'agent-2',
+    agentName: 'Order Accuracy Guard',
+    agentType: 'ORDER_FIXER_AGENT',
+    logType: 'optimisation',
+    action: 'Item sync',
+    detail: 'Menu items synced across Uber Eats and Deliveroo after mismatch detected between POS and channel catalogue.',
+    location: 'Liverpool St',
+    timestamp: _minsAgo(27),
+    status: 'success',
+    actor: 'AI agent',
+    permissions: ['sync_products'],
+    reason: 'Product catalogue mismatch detected between POS and delivery channel — 4 items were out of sync.',
+  },
+  {
+    id: 'recent-4',
+    agentId: 'agent-1',
+    agentName: 'Peak Hour Optimiser',
+    agentType: 'MENU_AGENT',
+    logType: 'optimisation',
+    action: 'New optimization',
+    detail: 'Upsell groups reordered and the best-sellers row refreshed to reflect current top performers.',
+    location: 'Shoreditch',
+    timestamp: _hoursAgo(3),
+    status: 'success',
+    actor: 'AI agent',
+    permissions: ['upsells', 'best_sellers'],
+    reason: 'Best-seller mix shifted week-over-week. Order volume threshold met. 7-day cooldown has passed.',
+  },
+  {
+    id: 'recent-5',
+    agentId: 'agent-2',
+    agentName: 'Order Accuracy Guard',
+    agentType: 'ORDER_FIXER_AGENT',
+    logType: 'optimisation',
+    action: 'Item snooze',
+    detail: '2 out-of-stock items snoozed on Just Eat after repeated failed orders detected at this location.',
+    location: 'Victoria',
+    timestamp: _hoursAgo(8),
+    status: 'success',
+    actor: 'AI agent',
+    permissions: ['snooze_products'],
+    reason: 'Items flagged as unavailable by kitchen — agent snoozed them to prevent further failed orders.',
+  },
+  {
+    id: 'recent-6',
+    agentId: 'agent-1',
+    agentName: 'Peak Hour Optimiser',
+    agentType: 'MENU_AGENT',
+    logType: 'optimisation',
+    action: 'New optimization',
+    detail: 'Category order adjusted to surface high-conversion sections earlier in the menu flow.',
+    location: 'Canary Wharf',
+    timestamp: _hoursAgo(21),
+    status: 'success',
+    actor: 'AI agent',
+    permissions: ['position'],
+    reason: 'Conversion drop detected in top categories. 7-day cooldown has passed.',
+  },
 )

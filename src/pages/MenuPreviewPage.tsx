@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, type ReactNode } from 'react'
+import { useState, useRef, useMemo, type ReactNode } from 'react'
 import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import {
   ArrowDirectionLeft,
@@ -8,6 +8,7 @@ import {
   Button,
   ChevronDirectionDown,
   ChevronDirectionUp,
+  Drawer,
   EditOutline,
   Filter,
   Heading,
@@ -21,19 +22,10 @@ import {
 } from '@deliverect/galaxy-react'
 import { Page } from '../components/Page'
 import { useAgents } from '../context/AgentsContext'
+import { MOCK_LOGS } from '../data/mockLogs'
 
 // ─── Mock data ─────────────────────────────────────────────────────────────────
 
-interface MockCycle {
-  id: string
-  label: string
-}
-
-const MOCK_CYCLES: MockCycle[] = [
-  { id: 'c3', label: '8 May 2026 – Present' },
-  { id: 'c2', label: '1 Apr 2026 – 7 May 2026' },
-  { id: 'c1', label: '1 Mar 2026 – 31 Mar 2026' },
-]
 
 interface PlanTask {
   id: string
@@ -327,90 +319,57 @@ function PlanItemRow({
   )
 }
 
-function ReasoningModal({ item, onClose }: { item: PlanItem; onClose: () => void }) {
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
-  }, [onClose])
-
+function ReasoningDrawer({ item, onClose }: { item: PlanItem | null; onClose: () => void }) {
   return (
-    <div
-      style={{
-        position: 'fixed', inset: 0, zIndex: 1000,
-        backgroundColor: 'rgba(0, 0, 0, 0.45)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        padding: vars.spacing['400'],
-      }}
-      onClick={onClose}
-    >
-      <div
-        style={{
-          backgroundColor: vars.colors.background.default,
-          borderRadius: vars.border.radius['200'],
-          boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
-          width: '100%', maxWidth: 480,
-          maxHeight: '80vh',
-          display: 'flex', flexDirection: 'column',
-          overflow: 'hidden',
-        }}
-        onClick={e => e.stopPropagation()}
-      >
-        {/* Modal header */}
-        <div style={{
-          display: 'flex', alignItems: 'center',
-          padding: `${vars.spacing['200']} ${vars.spacing['250']}`,
-          borderBottom: `1px solid ${vars.colors.border.neutral.default.default}`,
-          flexShrink: 0,
-          gap: vars.spacing['100'],
-        }}>
-          <div style={{ color: vars.colors.icon.neutral.default.default }}>{item.icon}</div>
-          <Heading level={4} style={{ flex: 1 }}>{item.label} — AI reasoning</Heading>
-        </div>
+    <Drawer.Root open={!!item} onOpenChange={open => { if (!open) onClose() }}>
+      <Drawer.Content overlay style={{ width: 520 }}>
+        {item && (
+          <>
+            <Drawer.Header>
+              <Inline space="100" alignY="center">
+                <div style={{ color: vars.colors.icon.neutral.default.default }}>{item.icon}</div>
+                <Heading level={3}>{item.label} — AI reasoning</Heading>
+              </Inline>
+            </Drawer.Header>
 
-        {/* Modal body */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: vars.spacing['250'] }}>
-          <Stack space="250" height="auto">
-            <Text size="sm">{item.reasoning.detail}</Text>
+            <Drawer.Body>
+              <Stack space="300" height="auto">
+                <Text size="sm">{item.reasoning.detail}</Text>
 
-            <Stack space="075" height="auto">
-              <Text weight="medium" size="sm">Sales data</Text>
-              <div style={{
-                border: `1px solid ${vars.colors.border.neutral.default.default}`,
-                borderRadius: vars.border.radius['100'],
-                overflow: 'hidden',
-              }}>
-                {item.reasoning.metrics.map((m, i) => (
-                  <div
-                    key={m.label}
-                    style={{
-                      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                      padding: `${vars.spacing['125']} ${vars.spacing['175']}`,
-                      borderBottom: i < item.reasoning.metrics.length - 1
-                        ? `1px solid ${vars.colors.border.neutral.default.default}`
-                        : undefined,
-                    }}
-                  >
-                    <Text size="sm" color="secondary">{m.label}</Text>
-                    <Text size="sm" weight="medium">{m.value}</Text>
+                <Stack space="075" height="auto">
+                  <Text weight="medium" size="sm">Sales data</Text>
+                  <div style={{
+                    border: `1px solid ${vars.colors.border.neutral.default.default}`,
+                    borderRadius: vars.border.radius['100'],
+                    overflow: 'hidden',
+                  }}>
+                    {item.reasoning.metrics.map((m, i) => (
+                      <div
+                        key={m.label}
+                        style={{
+                          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                          padding: `${vars.spacing['125']} ${vars.spacing['175']}`,
+                          borderBottom: i < item.reasoning.metrics.length - 1
+                            ? `1px solid ${vars.colors.border.neutral.default.default}`
+                            : undefined,
+                        }}
+                      >
+                        <Text size="sm" color="secondary">{m.label}</Text>
+                        <Text size="sm" weight="medium">{m.value}</Text>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </Stack>
-          </Stack>
-        </div>
+                </Stack>
+              </Stack>
+            </Drawer.Body>
 
-        {/* Modal footer */}
-        <div style={{
-          padding: `${vars.spacing['150']} ${vars.spacing['250']}`,
-          borderTop: `1px solid ${vars.colors.border.neutral.default.default}`,
-          display: 'flex', justifyContent: 'flex-end',
-          flexShrink: 0,
-        }}>
-          <Button status="neutral" variant="outline" onClick={onClose}>Close</Button>
-        </div>
-      </div>
-    </div>
+            <Drawer.Footer>
+              <Button status="neutral" variant="outline" onClick={onClose}>Close</Button>
+            </Drawer.Footer>
+          </>
+        )}
+      </Drawer.Content>
+    </Drawer.Root>
   )
 }
 
@@ -467,18 +426,39 @@ export function MenuPreviewPage() {
   const agent = agents.find(a => a.id === agentId)
   const agentLocations = agent?.locations ?? []
 
-  const initialLocationId = routeLocation.state?.locationId as string | undefined
+  const initialLocationId = (routeLocation.state?.locationId as string | undefined)
+    ?? agentLocations.find(l => l.name === (routeLocation.state?.locationName as string | undefined))?.id
   const [selectedLocationId, setSelectedLocationId] = useState(
     initialLocationId ?? agentLocations[0]?.id ?? ''
   )
-  const [selectedCycleId, setSelectedCycleId] = useState(MOCK_CYCLES[0].id)
+
+  const initialCycleNumber = routeLocation.state?.cycleNumber as number | undefined
+
+  // Compute cycle count for the initial location so useState can use it
+  const initLocationName = agentLocations.find(l => l.id === (initialLocationId ?? agentLocations[0]?.id))?.name
+  const initCycleCount = MOCK_LOGS.filter(
+    l => l.agentId === agentId && l.location === initLocationName && l.logType === 'optimisation'
+  ).length
+
+  const [selectedCycleId, setSelectedCycleId] = useState(() => {
+    const n = initialCycleNumber ?? initCycleCount
+    return n > 0 ? `cycle-${Math.min(n, Math.max(initCycleCount, 1))}` : 'cycle-1'
+  })
 
   const [expandedIds, setExpandedIds] = useState<string[]>(['position'])
   const [reasoningPermId, setReasoningPermId] = useState<string | null>(null)
   const [selectedCategoryId, setSelectedCategoryId] = useState(MOCK_MENU_PREVIEW[0].id)
 
   const selectedLocation = agentLocations.find(l => l.id === selectedLocationId) ?? agentLocations[0]
-  const selectedCycle    = MOCK_CYCLES.find(c => c.id === selectedCycleId) ?? MOCK_CYCLES[0]
+
+  const locationCycles = useMemo(() => {
+    const locName = agentLocations.find(l => l.id === selectedLocationId)?.name
+    if (!locName || !agentId) return []
+    return MOCK_LOGS
+      .filter(l => l.agentId === agentId && l.location === locName && l.logType === 'optimisation')
+      .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
+      .map((_, idx) => ({ id: `cycle-${idx + 1}`, label: `Optimization ${idx + 1}` }))
+  }, [agentId, selectedLocationId, agentLocations])
 
   const categoryRefs = useRef<Record<string, HTMLDivElement | null>>({})
 
@@ -519,28 +499,43 @@ export function MenuPreviewPage() {
                 filter: (
                   <Filter.Select
                     id="location"
-                    tagLabel="Location"
+                    tagLabel={agentLocations.find(l => l.id === selectedLocationId)?.name ?? 'Location'}
                     applyLabel="Apply"
                     value={selectedLocationId}
                     options={agentLocations.map(l => ({ label: l.name, value: l.id }))}
                     optionsEmptyLabel="No locations"
-                    onValueApplyChange={setSelectedLocationId}
-                    onValueClear={() => setSelectedLocationId(agentLocations[0]?.id ?? '')}
+                    onValueApplyChange={newLocId => {
+                      setSelectedLocationId(newLocId)
+                      const newLocName = agentLocations.find(l => l.id === newLocId)?.name
+                      const count = MOCK_LOGS.filter(
+                        l => l.agentId === agentId && l.location === newLocName && l.logType === 'optimisation'
+                      ).length
+                      setSelectedCycleId(`cycle-${count > 0 ? count : 1}`)
+                    }}
+                    onValueClear={() => {
+                      const defaultLocId = agentLocations[0]?.id ?? ''
+                      setSelectedLocationId(defaultLocId)
+                      const locName = agentLocations[0]?.name
+                      const count = MOCK_LOGS.filter(
+                        l => l.agentId === agentId && l.location === locName && l.logType === 'optimisation'
+                      ).length
+                      setSelectedCycleId(`cycle-${count > 0 ? count : 1}`)
+                    }}
                   />
                 ),
               },
               cycle: {
-                label: 'Cycle',
+                label: 'Optimization',
                 filter: (
                   <Filter.Select
                     id="cycle"
-                    tagLabel="Cycle"
+                    tagLabel={locationCycles.find(c => c.id === selectedCycleId)?.label ?? 'Cycle'}
                     applyLabel="Apply"
                     value={selectedCycleId}
-                    options={MOCK_CYCLES.map(c => ({ label: c.label, value: c.id }))}
-                    optionsEmptyLabel="No cycles"
+                    options={[...locationCycles].reverse().map(c => ({ label: c.label, value: c.id }))}
+                    optionsEmptyLabel="No optimizations"
                     onValueApplyChange={setSelectedCycleId}
-                    onValueClear={() => setSelectedCycleId(MOCK_CYCLES[0].id)}
+                    onValueClear={() => setSelectedCycleId(`cycle-${locationCycles.length > 0 ? locationCycles.length : 1}`)}
                   />
                 ),
               },
@@ -665,9 +660,7 @@ export function MenuPreviewPage() {
         </div>
       </Page.Body>
     </Page.Root>
-    {reasoningItem && (
-      <ReasoningModal item={reasoningItem} onClose={() => setReasoningPermId(null)} />
-    )}
+    <ReasoningDrawer item={reasoningItem} onClose={() => setReasoningPermId(null)} />
     </>
   )
 }
