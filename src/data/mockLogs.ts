@@ -51,6 +51,10 @@ export interface AgentLog {
   reason: string
   channels?: string[]
   report?: ReportData
+  orderId?: string
+  failureReason?: string
+  escalationAttempts?: string[]
+  itemPlu?: string
 }
 
 export const PERMISSION_LABELS: Record<string, string> = {
@@ -139,6 +143,7 @@ export const MOCK_LOGS: AgentLog[] = [
     actor: 'AI agent',
     permissions: ['sync_products'],
     reason: 'Product catalogue mismatch detected between POS and delivery channel — 6 items were out of sync.',
+    orderId: '#ORD-48291', failureReason: 'PRODUCT_NOT_FOUND', escalationAttempts: [], channels: ['uber-eats', 'deliveroo'],
   },
   {
     id: 'log-2b',
@@ -154,6 +159,8 @@ export const MOCK_LOGS: AgentLog[] = [
     actor: 'AI agent',
     permissions: ['snooze_products'],
     reason: 'Items flagged as unavailable by kitchen — agent snoozed them to prevent further failed orders.',
+    orderId: '#ORD-51847', failureReason: 'ITEM_UNAVAILABLE', escalationAttempts: ['Product sync', 'Menu republish'], channels: ['just-eat'],
+    itemPlu: 'PLU-3847',
   },
   {
     id: 'log-2c',
@@ -169,6 +176,7 @@ export const MOCK_LOGS: AgentLog[] = [
     actor: 'Marcus T.',
     permissions: ['publish_menu'],
     reason: 'Price correction applied to 4 items — menu re-published to propagate changes to all channels.',
+    channels: ['uber-eats', 'deliveroo'],
   },
   {
     id: 'log-2d',
@@ -184,6 +192,7 @@ export const MOCK_LOGS: AgentLog[] = [
     actor: 'AI agent',
     permissions: ['sync_products'],
     reason: 'Modifier group missing from channel payload — re-sync triggered to restore correct checkout options.',
+    orderId: '#ORD-53204', failureReason: 'MENU_SYNC_ERROR', escalationAttempts: [], channels: ['deliveroo'],
   },
   {
     id: 'log-2e',
@@ -199,6 +208,8 @@ export const MOCK_LOGS: AgentLog[] = [
     actor: 'AI agent',
     permissions: ['snooze_products'],
     reason: 'Kitchen reported stock unavailability — agent snoozed affected items to prevent customer disappointment.',
+    orderId: '#ORD-55619', failureReason: 'ITEM_UNAVAILABLE', escalationAttempts: ['Product sync'], channels: ['uber-eats', 'deliveroo', 'just-eat'],
+    itemPlu: 'PLU-1056',
   },
   {
     id: 'log-2f',
@@ -214,6 +225,7 @@ export const MOCK_LOGS: AgentLog[] = [
     actor: 'Sophie R.',
     permissions: ['publish_menu'],
     reason: 'Seasonal item additions approved — agent published the updated menu across all connected channels.',
+    channels: ['uber-eats', 'deliveroo', 'just-eat'],
   },
   {
     id: 'log-2g',
@@ -229,6 +241,7 @@ export const MOCK_LOGS: AgentLog[] = [
     actor: 'AI agent',
     permissions: ['sync_products'],
     reason: 'Breakfast menu expansion detected on POS — 5 new items missing from Just Eat catalogue.',
+    orderId: '#ORD-57033', failureReason: 'STALE_DATA', escalationAttempts: [], channels: ['just-eat'],
   },
   {
     id: 'log-2h',
@@ -244,6 +257,8 @@ export const MOCK_LOGS: AgentLog[] = [
     actor: 'AI agent',
     permissions: ['snooze_products', 'publish_menu'],
     reason: 'Items flagged unavailable mid-service — agent snoozed them and re-published to minimise order failures.',
+    orderId: '#ORD-58744', failureReason: 'ITEM_UNAVAILABLE', escalationAttempts: ['Product sync', 'Menu republish'], channels: ['deliveroo'],
+    itemPlu: 'PLU-7723',
   },
   {
     id: 'log-2i',
@@ -259,6 +274,7 @@ export const MOCK_LOGS: AgentLog[] = [
     actor: 'AI agent',
     permissions: ['sync_products'],
     reason: 'Partial sync failure detected on Uber Eats — image assets and descriptions were incomplete for 3 items.',
+    orderId: '#ORD-60128', failureReason: 'INVALID_PLU', escalationAttempts: [], channels: ['uber-eats'],
   },
   {
     id: 'log-2j',
@@ -274,6 +290,7 @@ export const MOCK_LOGS: AgentLog[] = [
     actor: 'Priya N.',
     permissions: ['publish_menu'],
     reason: 'Approved price revision applied — menu re-published to all 3 channels to reflect updated pricing.',
+    channels: ['uber-eats', 'deliveroo', 'just-eat'],
   },
   {
     id: 'log-3',
@@ -304,6 +321,8 @@ export const MOCK_LOGS: AgentLog[] = [
     actor: 'AI agent',
     permissions: ['snooze_products'],
     reason: 'Kitchen marked item as unavailable at start of service — agent snoozed it automatically to avoid failed orders.',
+    orderId: '#ORD-62901', failureReason: 'ITEM_UNAVAILABLE', escalationAttempts: ['Product sync'], channels: ['uber-eats'],
+    itemPlu: 'PLU-4912',
   },
   {
     id: 'log-7',
@@ -334,6 +353,7 @@ export const MOCK_LOGS: AgentLog[] = [
     actor: 'AI agent',
     permissions: ['sync_products', 'publish_menu'],
     reason: 'Channel integration reset detected — full re-sync and republish triggered to restore correct menu state.',
+    orderId: '#ORD-64512', failureReason: 'MENU_SYNC_ERROR', escalationAttempts: [], channels: ['uber-eats', 'deliveroo', 'just-eat'],
   },
   {
     id: 'log-10',
@@ -367,6 +387,10 @@ type LogVariant = {
   actor?: string
   channels?: string[]
   report?: ReportData
+  orderId?: string
+  failureReason?: string
+  escalationAttempts?: string[]
+  itemPlu?: string
 }
 
 const MENU_LOCATIONS = ['London Bridge', 'Shoreditch', 'Canary Wharf']
@@ -388,12 +412,32 @@ const MENU_VARIANTS: LogVariant[] = [
 ]
 
 const SUPPORT_VARIANTS: LogVariant[] = [
-  { action: 'Item sync',    logType: 'optimisation', status: 'success',  permissions: ['sync_products'],                    detail: 'Menu items re-synced across Uber Eats and Deliveroo after a mismatch between POS and channel catalogue.', reason: 'Product catalogue mismatch detected between POS and delivery channel.' },
-  { action: 'Item snooze',  logType: 'optimisation', status: 'success',  permissions: ['snooze_products'],                  detail: 'Out-of-stock items snoozed across all channels after repeated failed orders were detected.',              reason: 'Items flagged as unavailable by the kitchen — snoozed to prevent further failed orders.' },
-  { action: 'Publish menus',logType: 'publication',  status: 'success',  permissions: ['publish_menu'], actor: 'Sophie R.', detail: 'Updated menu pushed live to all channels following a price correction on several items.',                reason: 'Price correction applied — menu re-published to propagate changes to all channels.', channels: ['uber-eats', 'deliveroo', 'just-eat'] },
-  { action: 'Item sync',    logType: 'optimisation', status: 'warning',  permissions: ['sync_products'],                    detail: 'Modifier groups re-synced on Deliveroo after optional add-ons stopped appearing at checkout.',           reason: 'Modifier group missing from the channel payload — re-sync triggered to restore checkout options.' },
-  { action: 'Item snooze',  logType: 'optimisation', status: 'success',  permissions: ['snooze_products', 'publish_menu'],  detail: 'Unavailable items snoozed and the updated menu immediately re-published to the affected channels.',    reason: 'Items flagged unavailable mid-service — snoozed and re-published to minimise order failures.' },
-  { action: 'Item sync',    logType: 'optimisation', status: 'success',  permissions: ['sync_products'],                    detail: 'New items synced to Just Eat — live on POS but missing from the channel catalogue.',                  reason: 'Menu expansion detected on POS — new items missing from the Just Eat catalogue.' },
+  { action: 'Item sync',    logType: 'optimisation', status: 'success', permissions: ['sync_products'],
+    orderId: '#ORD-48291', failureReason: 'PRODUCT_NOT_FOUND', escalationAttempts: [], channels: ['uber-eats', 'deliveroo'],
+    detail: 'Menu items re-synced across Uber Eats and Deliveroo after a mismatch between POS and channel catalogue.',
+    reason: 'Product catalogue mismatch detected between POS and delivery channel — 6 items were out of sync.' },
+  { action: 'Item snooze',  logType: 'optimisation', status: 'success', permissions: ['snooze_products'],
+    orderId: '#ORD-51847', failureReason: 'ITEM_UNAVAILABLE', escalationAttempts: ['Product sync', 'Menu republish'], channels: ['deliveroo'],
+    itemPlu: 'PLU-3847',
+    detail: 'Out-of-stock items snoozed across all channels after repeated failed orders were detected.',
+    reason: 'Items flagged as unavailable by the kitchen — snoozed to prevent further failed orders.' },
+  { action: 'Publish menus', logType: 'publication', status: 'success', permissions: ['publish_menu'],
+    actor: 'Sophie R.', channels: ['uber-eats', 'deliveroo', 'just-eat'],
+    detail: 'Updated menu pushed live to all channels following a price correction on several items.',
+    reason: 'Price correction applied — menu re-published to propagate changes to all channels.' },
+  { action: 'Item sync',    logType: 'optimisation', status: 'warning', permissions: ['sync_products'],
+    orderId: '#ORD-53204', failureReason: 'MENU_SYNC_ERROR', escalationAttempts: [], channels: ['deliveroo'],
+    detail: 'Modifier groups re-synced on Deliveroo after optional add-ons stopped appearing at checkout.',
+    reason: 'Modifier group missing from the channel payload — re-sync triggered to restore checkout options.' },
+  { action: 'Item snooze',  logType: 'optimisation', status: 'success', permissions: ['snooze_products', 'publish_menu'],
+    orderId: '#ORD-55619', failureReason: 'ITEM_UNAVAILABLE', escalationAttempts: ['Product sync', 'Menu republish'], channels: ['uber-eats', 'just-eat'],
+    itemPlu: 'PLU-2291',
+    detail: 'Unavailable items snoozed and the updated menu immediately re-published to the affected channels.',
+    reason: 'Items flagged unavailable mid-service — snoozed and re-published to minimise order failures.' },
+  { action: 'Item sync',    logType: 'optimisation', status: 'success', permissions: ['sync_products'],
+    orderId: '#ORD-57033', failureReason: 'STALE_DATA', escalationAttempts: [], channels: ['just-eat'],
+    detail: 'New items synced to Just Eat — live on POS but missing from the channel catalogue.',
+    reason: 'Menu expansion detected on POS — new items missing from the Just Eat catalogue.' },
 ]
 
 function generateLogs(opts: {
@@ -429,6 +473,10 @@ function generateLogs(opts: {
       reason: v.reason,
       ...(v.channels ? { channels: v.channels } : {}),
       ...(v.report ? { report: v.report } : {}),
+      ...(v.orderId ? { orderId: v.orderId } : {}),
+      ...(v.failureReason ? { failureReason: v.failureReason } : {}),
+      ...(v.escalationAttempts !== undefined ? { escalationAttempts: v.escalationAttempts } : {}),
+      ...(v.itemPlu ? { itemPlu: v.itemPlu } : {}),
     })
   }
   return logs

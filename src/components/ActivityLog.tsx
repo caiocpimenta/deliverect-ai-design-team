@@ -117,6 +117,14 @@ function LogChips({ log }: { log: AgentLog }) {
 
 // ─── Permission reasoning ────────────────────────────────────────────────────
 
+const FAILURE_REASON_LABELS: Record<string, string> = {
+  PRODUCT_NOT_FOUND: 'Product not found',
+  INVALID_PLU:       'Invalid PLU',
+  ITEM_UNAVAILABLE:  'Item unavailable',
+  MENU_SYNC_ERROR:   'Menu sync error',
+  STALE_DATA:        'Stale data',
+}
+
 const ACTION_DESCRIPTIONS: Record<string, string> = {
   'New optimization':                  'An automated menu optimization where the AI agent applies changes across one or more permissions to improve performance.',
   'Optimization check':                'A scheduled review where the AI agent evaluates menu performance. No changes are applied when the menu is already performing within target.',
@@ -290,6 +298,79 @@ function AiReasoningBlock({ detail, reason }: { detail: string; reason: string }
         )}
       </div>
     </div>
+  )
+}
+
+function SupportDrawerBody({ log }: { log: AgentLog }) {
+  const isAutomated = log.actor === 'AI agent'
+  return (
+    <Stack space="300" height="auto">
+      {isAutomated && log.orderId && (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: vars.spacing['300'] }}>
+          <Stack space="050" height="auto">
+            <Text size="sm" weight="medium" color="secondary">Order with issue</Text>
+            <Text size="sm">{log.orderId}</Text>
+          </Stack>
+          {log.failureReason && (
+            <Stack space="050" height="auto">
+              <Text size="sm" weight="medium" color="secondary">Failure reason</Text>
+              <Text size="sm">{FAILURE_REASON_LABELS[log.failureReason] ?? log.failureReason}</Text>
+            </Stack>
+          )}
+        </div>
+      )}
+
+      {log.action === 'Item snooze' && log.itemPlu && (
+        <Stack space="050" height="auto">
+          <Text size="sm" weight="medium" color="secondary">Item PLU</Text>
+          <Text size="sm">{log.itemPlu}</Text>
+        </Stack>
+      )}
+
+      {isAutomated && log.escalationAttempts && log.escalationAttempts.length > 0 && (
+        <Stack space="075" height="auto">
+          <Text size="sm" weight="medium" color="secondary">Previous attempts</Text>
+          {log.escalationAttempts.map(attempt => (
+            <Inline key={attempt} space="075" alignY="center">
+              <Text size="sm" color="secondary">·</Text>
+              <Text size="sm">{attempt} was not enough</Text>
+            </Inline>
+          ))}
+        </Stack>
+      )}
+
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: log.channels && log.channels.length > 0 ? '1fr 1fr 1fr' : '1fr 1fr',
+        gap: vars.spacing['300'],
+      }}>
+        <Stack space="050" height="auto">
+          <Text size="sm" weight="medium" color="secondary">Timestamp</Text>
+          <Text size="sm">{formatTimestamp(log.timestamp)}</Text>
+        </Stack>
+        <Stack space="050" height="auto">
+          <Text size="sm" weight="medium" color="secondary">Location</Text>
+          <Text size="sm">{log.location}</Text>
+        </Stack>
+        {log.channels && log.channels.length > 0 && (
+          <Stack space="050" height="auto">
+            <Text size="sm" weight="medium" color="secondary">Channel affected</Text>
+            <Inline space="050">
+              {log.channels.map(ch => (
+                <Badge key={ch} size="sm" status="neutral">{CHANNEL_LABELS[ch] ?? ch}</Badge>
+              ))}
+            </Inline>
+          </Stack>
+        )}
+      </div>
+
+      <Stack space="050" height="auto">
+        <Text size="sm" weight="medium" color="secondary">Operation report</Text>
+        <Link as="button" size="sm">Open operation report</Link>
+      </Stack>
+
+      <AiReasoningBlock detail={log.detail} reason={log.reason} />
+    </Stack>
   )
 }
 
@@ -982,11 +1063,16 @@ export function ActivityLog({ logs, showAgentColumn = false, showAgentTypeFilter
               </Drawer.Header>
 
               <Drawer.Body>
-                {selectedLog.logType === 'optimisation' && <OptimisationDrawerBody log={selectedLog} cycle={cycleByLogId.get(selectedLog.id)} />}
-                {selectedLog.logType === 'publication'  && <PublicationDrawerBody  log={selectedLog} />}
-                {selectedLog.logType === 'report' && selectedLog.report && (
-                  <ReportDrawerBody report={selectedLog.report} reason={selectedLog.reason} detail={selectedLog.detail} />
-                )}
+                {selectedLog.agentType === 'ORDER_FIXER_AGENT'
+                  ? <SupportDrawerBody log={selectedLog} />
+                  : selectedLog.logType === 'optimisation'
+                    ? <OptimisationDrawerBody log={selectedLog} cycle={cycleByLogId.get(selectedLog.id)} />
+                    : selectedLog.logType === 'publication'
+                      ? <PublicationDrawerBody log={selectedLog} />
+                      : selectedLog.logType === 'report' && selectedLog.report
+                        ? <ReportDrawerBody report={selectedLog.report} reason={selectedLog.reason} detail={selectedLog.detail} />
+                        : null
+                }
               </Drawer.Body>
 
               {/* Drawer.Footer with Close/Preview/Export buttons — hidden, kept for future use */}
